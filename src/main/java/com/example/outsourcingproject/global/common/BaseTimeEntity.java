@@ -18,6 +18,6 @@ public class BaseTimeEntity {
     private LocalDateTime CreatedAt;
 
     @LastModifiedDate
-    private LocalDateTime ModifiredAt;
+    private LocalDateTime ModifiedAt;
 
 }
