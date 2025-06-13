@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.domain.tasks.entity;
+package com.example.outsourcingproject.domain.task.entity;
 
 import com.example.outsourcingproject.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
