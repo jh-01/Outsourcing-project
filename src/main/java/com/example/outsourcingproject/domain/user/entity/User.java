@@ -27,10 +27,10 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private boolean is_deleted = false;
+    private boolean isDeleted = false;
 
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
 }
