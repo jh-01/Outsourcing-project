@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.scheduling.config.Task;
 
 @Entity
 @Getter
@@ -21,13 +20,15 @@ public class Comment extends BaseTimeEntity {
     @Column
     private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    // Entity 병합후 아래 코드 주석해제 필요
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feed_id")
-    private Task task;
+    // Entity 병합후 아래 코드 주석해제 필요
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "feed_id")
+//    private Task task;
 
     public Comment(Long id, String contents) {
         this.id = id;
