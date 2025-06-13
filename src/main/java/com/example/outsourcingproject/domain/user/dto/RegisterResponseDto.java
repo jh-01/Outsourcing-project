@@ -2,10 +2,12 @@ package com.example.outsourcingproject.domain.user.dto;
 
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class RegisterResponseDto {
 
-    private final String id;
+    private final int id;
 
     private final String username;
 
@@ -13,10 +15,10 @@ public class RegisterResponseDto {
 
     private final String name;
 
-    private final String createdAt;
+    private final LocalDateTime createdAt;
 
 
-    public RegisterResponseDto(String id, String username, String email, String name, String createdAt) {
+    public RegisterResponseDto(int id, String username, String email, String name, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;

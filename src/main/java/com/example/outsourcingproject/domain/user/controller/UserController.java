@@ -3,6 +3,7 @@ package com.example.outsourcingproject.domain.user.controller;
 import com.example.outsourcingproject.domain.user.dto.RegisterRequestDto;
 import com.example.outsourcingproject.domain.user.dto.RegisterResponseDto;
 import com.example.outsourcingproject.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UserController {
 
     // 유저 회원가입
     @PostMapping("/auth/register")
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto requestDto){
+    public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto requestDto){
         return new ResponseEntity<>(userService.register(requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword(), requestDto.getName()), HttpStatus.OK);
     }
 
