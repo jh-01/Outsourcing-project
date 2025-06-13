@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.tasks.entity;
 
+import com.example.outsourcingproject.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
