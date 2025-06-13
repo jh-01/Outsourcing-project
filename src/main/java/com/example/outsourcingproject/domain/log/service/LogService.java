@@ -4,12 +4,14 @@ import com.example.outsourcingproject.domain.log.dto.LogResponse;
 import com.example.outsourcingproject.domain.log.entity.Log;
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.log.repository.LogRepository;
+import com.example.outsourcingproject.global.exception.log.LogNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,4 +30,12 @@ public class LogService {
         return logPage.map(LogResponse::toDto);
     }
 
+    public LogResponse getLog(int logId) {
+        Optional<Log> logOpt = logRepository.findById(logId);
+        if ( logOpt.isEmpty()) {
+            throw new LogNotFoundException();
+        }
+
+        return LogResponse.toDto(logOpt.get());
+    }
 }
