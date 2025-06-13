@@ -16,7 +16,6 @@ import java.io.IOException;
 
 @Slf4j(topic = "JwtFilter")
 @RequiredArgsConstructor
-@Component
 public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
@@ -26,14 +25,15 @@ public class JwtFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String requestURI = httpRequest.getRequestURI();
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
-        // 로그인 요청은 필터 건너뛰고 그대로 진행
-        if(requestURI.equals("/api/auth/login")) {
+        // 회원가입은 필터 건너뛰고 그대로 진행
+        if(requestURI.equals("/api/auth/register")) {
             chain.doFilter(request,response);
             return;
         }
