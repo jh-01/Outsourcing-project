@@ -20,7 +20,6 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private int id;
 
-    @Column(nullable = false)
     private int targetId;
 
     @Column(nullable = false)
