@@ -2,7 +2,7 @@ package com.example.outsourcingproject.domain.user.service;
 
 import com.example.outsourcingproject.domain.user.dto.UserResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.global.PasswordEncoder;
+import com.example.outsourcingproject.global.security.PasswordEncoder;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
@@ -10,10 +10,8 @@ import com.example.outsourcingproject.global.exception.ErrorType;
 import com.example.outsourcingproject.global.util.JwtUtil;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -41,7 +39,7 @@ public class UserService {
 
         User saved = userRepository.save(user);
 
-        return ApiResponse.createSuccess("회원가입이 완료되었습니다.", new UserResponseDto(saved.getId(), saved.getUsername(), saved.getEmail(), saved.getName(), saved.getCreatedAt()), LocalDateTime.now());
+        return ApiResponse.createSuccess("회원가입이 완료되었습니다.", new UserResponseDto(saved.getId(), saved.getUsername(), saved.getEmail(), saved.getName(), saved.getCreatedAt()));
     }
 
     // 현재 유저 정보 조회
@@ -53,7 +51,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorType.INVALID_CREDENTIALS));
 
-        return ApiResponse.createSuccess("사용자 정보를 조회했습니다.", new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getCreatedAt()), LocalDateTime.now());
+        return ApiResponse.createSuccess("사용자 정보를 조회했습니다.", new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getCreatedAt()));
     }
 
     // 유저 비밀번호 수정
@@ -80,7 +78,7 @@ public class UserService {
 
         user.updatePassword(updateNewPassword);
 
-        return ApiResponse.createSuccessWithNoContent("비밀번호가 수정되었습니다.", LocalDateTime.now());
+        return ApiResponse.createSuccessWithNoContent("비밀번호가 수정되었습니다.");
 
     }
 
@@ -102,7 +100,7 @@ public class UserService {
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
 
-        return ApiResponse.createSuccessWithNoContent("회원탈퇴가 완료되었습니다.", LocalDateTime.now());
+        return ApiResponse.createSuccessWithNoContent("회원탈퇴가 완료되었습니다.");
     }
 
     // 유저 로그인
@@ -122,7 +120,7 @@ public class UserService {
             throw new CustomException(ErrorType.INVALID_CREDENTIALS);
         }
 
-        return ApiResponse.createSuccess("로그인이 완료되었습니다.", jwtUtil.createToken(user.getId(), user.getEmail()), LocalDateTime.now());
+        return ApiResponse.createSuccess("로그인이 완료되었습니다.", jwtUtil.createToken(user.getId(), user.getEmail()));
     }
 
 }

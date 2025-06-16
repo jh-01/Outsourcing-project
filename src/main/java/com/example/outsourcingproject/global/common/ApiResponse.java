@@ -8,29 +8,26 @@ import java.time.LocalDateTime;
 @Getter
 public class ApiResponse<T> {
 
-    private static final String SUCCESS_STATUS = "true";
-    private static final String ERROR_STATUS = "false";
-
-    private String status;
+    private boolean status;
     private String message;
     private T data;
     private LocalDateTime timestamp;
 
-    public static <T> ApiResponse<T> createSuccess(String message, T data, LocalDateTime timestamp){
-        return new ApiResponse<>(SUCCESS_STATUS, message, data, timestamp);
+    public static <T> ApiResponse<T> createSuccess(String message, T data){
+        return new ApiResponse<>(true, message, data, LocalDateTime.now());
     }
 
-    public static ApiResponse<?> createSuccessWithNoContent(String message, LocalDateTime timestamp) {
-        return new ApiResponse<>(SUCCESS_STATUS, message,null, timestamp);
+    public static ApiResponse<?> createSuccessWithNoContent(String message) {
+        return new ApiResponse<>(true, message,null, LocalDateTime.now());
     }
 
     // 예외 발생으로 API 호출 실패시 반환
-    public static ApiResponse<ExceptionDto> createError(CustomException e, LocalDateTime timestamp) {
-        return new ApiResponse<>(ERROR_STATUS, e.getErrorType().getErrorMessage(), null , timestamp);
+    public static ApiResponse<ExceptionDto> createError(CustomException e) {
+        return new ApiResponse<>(false, e.getErrorType().getErrorMessage(), null, LocalDateTime.now());
     }
 
 
-    private ApiResponse(String status, String message,  T data, LocalDateTime timestamp) {
+    private ApiResponse(boolean status, String message,  T data, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.data = data;
