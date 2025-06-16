@@ -71,8 +71,12 @@ public class Logging {
 
                 if (name.equals(targetKey)) {
                     Object value = args[i];
-                    if (value instanceof Integer) return (Integer) value;
-                    if (value instanceof Long) return ((Long) value).intValue();
+                    if (value instanceof Integer) {
+                        return (Integer) value;
+                    }
+                    if (value instanceof Long) {
+                        return ((Long) value).intValue();
+                    }
                 }
             }
         }
@@ -81,8 +85,7 @@ public class Logging {
     }
 
     private int extractFromToken() {
-        //TODO:  토큰 값 구하는 로직
-        return 1;
+        return request.getAttribute("id") == null ? -1 : (int) request.getAttribute("id");
     }
 
     private int extractFromResponse(Object result) {
