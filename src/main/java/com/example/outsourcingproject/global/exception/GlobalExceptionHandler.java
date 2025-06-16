@@ -1,21 +1,21 @@
 package com.example.outsourcingproject.global.exception;
 
-import com.example.outsourcingproject.global.exception.entity.ErrorResponse;
-import com.example.outsourcingproject.global.exception.log.LogNotFoundException;
+import com.example.outsourcingproject.global.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(LogNotFoundException.class)
-    public ResponseEntity<ErrorResponse> logNotFoundExp(LogNotFoundException e){
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<?>> handleException(CustomException customException) {
+        ApiResponse<?> response = ApiResponse.createError(customException, LocalDateTime.now());
         return ResponseEntity
-                .status(e.getHttpStatus())
-                .body(new ErrorResponse(e.getMessage()));
+                .status(customException.getErrorType().getHttpStatus())
+                .body(response);
     }
-
-
-
 }
+
