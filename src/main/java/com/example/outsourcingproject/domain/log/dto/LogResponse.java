@@ -5,7 +5,7 @@ import com.example.outsourcingproject.domain.log.entity.LogType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -19,7 +19,7 @@ public class LogResponse {
 
     private final String url;
     private final String ipAddress;
-    private final LocalDate localDate;
+    private final LocalDateTime createAt;
 
 
     public static LogResponse toDto(Log log) {
