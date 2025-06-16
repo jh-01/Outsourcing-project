@@ -23,20 +23,20 @@ public class Task extends BaseTimeEntity {
     // @ManyToOne
     // @JoinColumn(name = "manager_id")
     // private User manager;
-    @NotNull
+    @Column(nullable = false)
     private String managerName;
 
     // @ManyToOne
     // @JoinColumn(name = "generator_id")
     // private User generator;
-    @NotNull
+    @Column(nullable = false)
     private String generatorName;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
     private String description;
 
-    @NotNull
+    @Column(nullable = false)
     private Priority priority;
 
     private LocalDateTime deadline;
