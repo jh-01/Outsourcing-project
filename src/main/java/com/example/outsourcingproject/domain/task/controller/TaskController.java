@@ -23,8 +23,7 @@ public class TaskController {
             HttpServletRequest request,
             @Valid @RequestBody TaskRequest taskRequest
     ) {
-
-        Long userId = (Long) request.getAttribute("id");
+        Long userId = 1L; // (Long) request.getAttribute("id");
         TaskResponse taskResponse = taskService.createTask(taskRequest, userId);
 
         return ResponseEntity.ok().body(taskResponse);
@@ -39,7 +38,7 @@ public class TaskController {
             @Valid @RequestBody TaskRequest taskRequest,
             @PathVariable Long taskId
     ) {
-        Long userId = (Long) request.getAttribute("id");
+        Long userId = 1L;// (Long) request.getAttribute("id");
         TaskResponse taskResponse = taskService.modifyTask(taskRequest, taskId, userId);
 
         return ResponseEntity.ok().body(taskResponse);
@@ -51,7 +50,7 @@ public class TaskController {
             @Valid @RequestBody TaskStatusUpdateRequest statusUpdateRequest,
             @PathVariable Long taskId
     ) {
-        Long userId = (Long) request.getAttribute("id");
+        Long userId = 1L; //(Long) request.getAttribute("id");
         TaskResponse taskResponse = taskService.modifyTaskStatus(statusUpdateRequest, taskId, userId);
 
         return ResponseEntity.ok().body(taskResponse);
@@ -63,7 +62,7 @@ public class TaskController {
             HttpServletRequest request,
             @PathVariable Long taskId
     ) {
-        Long userId = (Long) request.getAttribute("id");
+        Long userId = 1L; //(Long) request.getAttribute("id");
         taskService.softDelete(taskId, userId);
 
         return ResponseEntity.ok().build();

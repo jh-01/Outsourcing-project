@@ -30,6 +30,7 @@ public class TaskService {
                 .findById(userId).orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
         User foundManager = userRepository.findById(taskRequest.getManagerId())
                 .orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
+        // TODO : UserNotFoundException	404 NOT_FOUND
 
         Task task = Task.builder()
                 .title(taskRequest.getTitle())
@@ -52,8 +53,8 @@ public class TaskService {
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
         User foundManager = userRepository.findById(taskRequest.getManagerId())
                 .orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
+        // TODO : UserNotFoundException	404 NOT_FOUND
 
-        // TODO 인증/인가 : manager , generator만 가능
         validateTaskAccessPermission(foundTask, userId);
 
         LocalDateTime deadline = validateDeadline(taskRequest.getDeadline());
@@ -106,6 +107,7 @@ public class TaskService {
 
         if (resolvedDeadline.isBefore(LocalDateTime.now())) {
             throw new RuntimeException("마감시간이 현재시간보다 과거임");
+            // TODO : InvalidDeadlineException 400 BAD_REQUEST
         }
 
         return resolvedDeadline;
@@ -126,6 +128,7 @@ public class TaskService {
                     String.format("'%s'에서 '%s'로 변경할 수 없습니다.",
                             currentStatus.name(), newStatus.name())
             );
+            // TODO : InvalidTaskStatusTransitionException 400 BAD_REQUEST
         }
     }
 
@@ -148,6 +151,7 @@ public class TaskService {
     private void validateTaskAccessPermission(Task task, Long userId) {
         if (!isTaskAccessible(task, userId)) {
             throw new RuntimeException("접근 권한이 없습니다.");
+            // 	TODO : TaskAccessDeniedException 403 FORBIDDEN
         }
     }
 
