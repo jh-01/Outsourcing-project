@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.global;
+package com.example.outsourcingproject.global.config;
 
 import com.example.outsourcingproject.global.filter.JwtFilter;
 import com.example.outsourcingproject.global.util.JwtUtil;
