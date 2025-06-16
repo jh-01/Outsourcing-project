@@ -22,4 +22,14 @@ public class CommentResponseDto {
         this.timestamp = timestamp;
 
     }
+
+    // Comment 에서 CommentResponseDto 로 변환
+    public static CommentResponseDto toDto(Comment comment){
+        return new CommentResponseDto(
+                true,
+                "조회 성공!",
+                new CommentResponseData(comment.getTask().getId(), comment.getUser().getName(), comment.getContents()),
+                comment.getCreatedAt());
+    }
+
 }

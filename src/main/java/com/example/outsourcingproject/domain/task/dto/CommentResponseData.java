@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.task.dto;
 
+import com.example.outsourcingproject.domain.task.entity.Comment;
 import lombok.Getter;
 
 @Getter

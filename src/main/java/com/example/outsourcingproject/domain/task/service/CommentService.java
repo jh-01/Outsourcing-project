@@ -7,11 +7,15 @@ import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,7 @@ public class CommentService {
     private TaskRepository taskRepository;
 
     // 댓글 생성 로직
-    public CommentResponseDto addComment(Long taskId, String contents) {
+    public final CommentResponseDto addComment(Long taskId, String contents) {
 
         Comment comment = new Comment(contents);
 
@@ -58,6 +62,21 @@ public class CommentService {
 
         return new CommentResponseDto(true, "수정 성공!", data, comment.getModifiedAt());
 
+
+    }
+
+
+    // 댓글 조회 로직
+    public Page<CommentResponseDto> getCommentList(Long taskId, Pageable pageable) {
+
+        // 댓글 리스트 조회
+        Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
+
+        // 댓글을 응답객체로 변환
+        List<CommentResponseDto> CommentResponseDtos = comments.stream().map(CommentResponseDto::toDto).collect(Collectors.toList());
+
+        // 응답객체를 페이지객체로 변환
+        return new PageImpl<>(CommentResponseDtos, pageable, comments.getTotalElements());
 
     }
 
