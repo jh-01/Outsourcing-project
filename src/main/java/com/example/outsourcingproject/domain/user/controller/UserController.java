@@ -28,7 +28,7 @@ public class UserController {
     }
 
     // 유저 비밀번호 수정
-    @PatchMapping("/api/auth/me")
+    @PatchMapping("/auth/me")
     public ResponseEntity<String> updatePassword(@Valid @RequestBody UserUpdatePasswordRequestDto requestDto, @RequestHeader("Authorization") String authorizationHeader){
         return new ResponseEntity<>(userService.updatePassword(requestDto.getNewPassword(), requestDto.getOldPassword(), authorizationHeader), HttpStatus.OK);
     }
