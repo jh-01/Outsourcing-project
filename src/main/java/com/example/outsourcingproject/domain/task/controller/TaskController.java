@@ -1,15 +1,12 @@
 package com.example.outsourcingproject.domain.task.controller;
 
-import com.example.outsourcingproject.domain.common.dto.ApiResponse;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
-import com.example.outsourcingproject.domain.task.repository.QTaskRepository;
-import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.task.service.TaskService;
+import com.example.outsourcingproject.global.common.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

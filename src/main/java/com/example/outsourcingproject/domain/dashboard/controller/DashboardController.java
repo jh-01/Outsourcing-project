@@ -1,8 +1,8 @@
 package com.example.outsourcingproject.domain.dashboard.controller;
 
-import com.example.outsourcingproject.domain.common.dto.ApiResponse;
 import com.example.outsourcingproject.domain.dashboard.service.DashboardService;
 import com.example.outsourcingproject.domain.user.service.UserService;
+import com.example.outsourcingproject.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
