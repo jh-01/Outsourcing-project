@@ -5,6 +5,7 @@ import com.example.outsourcingproject.domain.task.dto.response.QTaskResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.QTask;
 import com.example.outsourcingproject.domain.task.entity.Status;
+import com.example.outsourcingproject.domain.user.entity.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,6 +25,9 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
 
     @Override
     public TaskResponse searchTask(Long id){
+        QUser manager = new QUser("manager");
+        QUser generator = new QUser("generator");
+
         return queryFactory.select(
                 new QTaskResponse(
                         task.id,
@@ -39,12 +43,16 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
                         task.ModifiedAt
                 )
         ).from(task)
+                .leftJoin(task.manager, manager)
+                .leftJoin(task.generator, generator)
                 .where(task.id.eq(id))
                 .fetchOne();
     }
     @Override
     public List<TaskResponse> searchTasks(TaskReadRequest request){
         QTask task = QTask.task;
+        QUser manager = new QUser("manager");
+        QUser generator = new QUser("generator");
         BooleanBuilder builder = new BooleanBuilder();
 
         if(request.getTitle() != null){
@@ -57,7 +65,7 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
             builder.and(task.status.eq(request.getStatus()));
         }
 
-        Pageable pageable = (Pageable) PageRequest.of(request.getPage(), request.getSize());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
         return queryFactory.select(
             new QTaskResponse(
@@ -78,6 +86,8 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
                         isDescriptionContains(request.getDescription()),
                         isStatusContains(request.getStatus())
                 )
+                .leftJoin(task.manager, manager)
+                .leftJoin(task.generator, generator)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
