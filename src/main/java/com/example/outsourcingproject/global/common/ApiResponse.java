@@ -21,11 +21,15 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, message,null, LocalDateTime.now());
     }
 
-    // 예외 발생으로 API 호출 실패시 반환
+    // 커스텀 예외 발생
     public static ApiResponse<ExceptionDto> createError(CustomException e) {
         return new ApiResponse<>(false, e.getErrorType().getErrorMessage(), null, LocalDateTime.now());
     }
 
+    // Validation 예외 발생
+    public static ApiResponse<String> createValidationError(String message) {
+        return new ApiResponse<>(false, message, null, LocalDateTime.now());
+    }
 
     private ApiResponse(boolean status, String message,  T data, LocalDateTime timestamp) {
         this.status = status;
@@ -33,10 +37,4 @@ public class ApiResponse<T> {
         this.data = data;
         this.timestamp = timestamp;
     }
-
-
-
-
-
-
 }
