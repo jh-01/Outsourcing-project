@@ -23,7 +23,6 @@ public class Log {
     private int targetId;
 
     @Column(nullable = false)
-//    @JoinColumn(name="user_id")
     private int userId;
 
     @Column(nullable = false)
