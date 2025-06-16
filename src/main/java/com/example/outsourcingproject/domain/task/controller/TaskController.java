@@ -23,13 +23,14 @@ public class TaskController {
     public ApiResponse<?> getTaskList(
             @ModelAttribute TaskReadRequest request
             ){
-        List<TaskResponse> taskList = taskService.getTaskList(request);
+
+        List<TaskResponse> taskList = taskService.findTasks(request);
         return ApiResponse.ok("조회 성공", taskList);
     }
 
     @GetMapping("/{id}")
     public ApiResponse<?> getTask(@PathVariable @NotNull Long id){
-        TaskResponse task = taskService.getTask(id);
+        TaskResponse task = taskService.findTask(id);
         return ApiResponse.ok("조회 성공", task);
     }
 }

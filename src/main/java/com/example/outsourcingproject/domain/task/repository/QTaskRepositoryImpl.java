@@ -1,30 +1,33 @@
 package com.example.outsourcingproject.domain.task.repository;
 
+import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.QTaskResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.QTask;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.user.entity.QUser;
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.outsourcingproject.domain.task.entity.QTask.task;
 
 @Repository
 @RequiredArgsConstructor
-public abstract class QTaskRepositoryImpl implements QTaskRepository{
+public class QTaskRepositoryImpl implements QTaskRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public TaskResponse searchTask(Long id){
+    public TaskResponse findTaskById(Long id){
         QUser manager = new QUser("manager");
         QUser generator = new QUser("generator");
 
@@ -40,30 +43,20 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
                         task.status,
                         task.startAt,
                         task.createdAt,
-                        task.ModifiedAt
+                        task.modifiedAt
                 )
         ).from(task)
-                .leftJoin(task.manager, manager)
-                .leftJoin(task.generator, generator)
-                .where(task.id.eq(id))
+                .leftJoin(task.manager, manager).fetchJoin()
+                .leftJoin(task.generator, generator).fetchJoin()
+                .where(task.id.eq(id), task.isDeleted.isFalse())
                 .fetchOne();
     }
+
     @Override
-    public List<TaskResponse> searchTasks(TaskReadRequest request){
+    public List<TaskResponse> findTasks(TaskReadRequest request){
         QTask task = QTask.task;
         QUser manager = new QUser("manager");
         QUser generator = new QUser("generator");
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if(request.getTitle() != null){
-            builder.and(task.title.containsIgnoreCase(request.getTitle()));
-        }
-        if(request.getDescription() != null){
-            builder.and(task.description.containsIgnoreCase(request.getDescription()));
-        }
-        if(request.getStatus() != null){
-            builder.and(task.status.eq(request.getStatus()));
-        }
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
@@ -79,30 +72,97 @@ public abstract class QTaskRepositoryImpl implements QTaskRepository{
                     task.status,
                     task.startAt,
                     task.createdAt,
-                    task.ModifiedAt
+                    task.modifiedAt
             )).from(task)
                 .where(
                         isTitleContains(request.getTitle()),
                         isDescriptionContains(request.getDescription()),
-                        isStatusContains(request.getStatus())
+                        isStatusContains(request.getStatus()),
+                        isManagerContains(request.getManagerId()),
+                        task.isDeleted.isFalse()
                 )
-                .leftJoin(task.manager, manager)
-                .leftJoin(task.generator, generator)
+                .leftJoin(task.manager, manager).fetchJoin()
+                .leftJoin(task.generator, generator).fetchJoin()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
     private BooleanExpression isTitleContains(String title){
-        return title.isEmpty() ? null : task.title.containsIgnoreCase(title);
+        return StringUtils.hasText(title) ? task.title.containsIgnoreCase(title) : null;
     }
 
     private BooleanExpression isDescriptionContains(String description){
-        return description.isEmpty() ? null : task.description.containsIgnoreCase(description);
+        return StringUtils.hasText(description) ? task.description.containsIgnoreCase(description) : null;
     }
 
     private BooleanExpression isStatusContains(Status status){
-        return status == null ? null : task.status.stringValue().containsIgnoreCase(status.toString());
+        return status == null ? task.status.stringValue().containsIgnoreCase(status.toString()): null;
+    }
+
+    private BooleanExpression isManagerContains(long managerId){
+        return task.manager.id.eq((int) managerId);
+    }
+
+    @Override
+    public TaskOutline findDashboard() {
+        QTask task = QTask.task;
+        int todoCount = 0;
+        int inProgressCount = 0;
+        int doneCount = 0;
+
+        // 전체 태스크 수
+        long totalCount = queryFactory
+                .select(task.count())
+                .from(task)
+                .where(task.isDeleted.isFalse())
+                .fetchOne();
+
+        // 상태별 태스크 수
+        List<Tuple> statusCounts = queryFactory
+                .select(task.status, task.count())
+                .from(task)
+                .where(task.isDeleted.isFalse())
+                .groupBy(task.status)
+                .fetch();
+
+        for (Tuple tuple : statusCounts) {
+            Status status = tuple.get(task.status);
+            Long count = tuple.get(task.count());
+
+            if (status == Status.TODO) {
+                todoCount = count.intValue();
+            } else if (status == Status.IN_PROGRESS) {
+                inProgressCount = count.intValue();
+            } else if (status == Status.DONE) {
+                doneCount = count.intValue();
+            }
+        }
+
+        // 완료율
+        double completionRate = totalCount == 0 ? 0.0 : (double) doneCount / totalCount;
+
+        // 기한 초과 태스크수
+        LocalDateTime now = LocalDateTime.now();
+
+        long overDueDateCount = queryFactory
+                .select(task.count())
+                .from(task)
+                .where(
+                        task.isDeleted.isFalse(),
+                        task.status.eq(Status.IN_PROGRESS).or(task.status.eq(Status.TODO)),
+                        task.deadline.before(now)
+                )
+                .fetchOne();
+
+        return new TaskOutline(
+                totalCount,
+                (long) todoCount,
+                (long) inProgressCount,
+                (long) doneCount,
+                completionRate,
+                overDueDateCount
+        );
     }
 
 }

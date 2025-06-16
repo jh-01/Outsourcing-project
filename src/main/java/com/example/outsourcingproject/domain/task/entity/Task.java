@@ -31,24 +31,18 @@ public class Task extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column()
     private String description;
 
-    @Column()
     private Priority priority;
 
     @Column()
     private LocalDateTime deadline;
 
-    @Column()
     private Status status;
 
-    @Column()
     private LocalDateTime startAt;
 
-    @Column()
     private boolean isDeleted;
 
-    @Column()
     private LocalDateTime deletedAt;
 }

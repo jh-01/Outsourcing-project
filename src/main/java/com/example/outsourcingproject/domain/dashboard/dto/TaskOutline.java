@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TaskOutline {
-    private int totalCount;
-    private int todoCount;
-    private int inProgressCount;
-    private int doneCount;
+    private Long totalCount;
+    private Long todoCount;
+    private Long inProgressCount;
+    private Long doneCount;
     private double completionRate;
-    private int overdueCount;
+    private Long overdueCount;
 }
