@@ -6,13 +6,11 @@ import com.example.outsourcingproject.domain.log.service.LogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -20,13 +18,14 @@ import java.time.LocalDate;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class LogController {
-
     private final LogService logService;
 
     @GetMapping("/logs")
     public ResponseEntity<Page<LogResponse>> getLog(@RequestParam(defaultValue = "ALL") LogType type,
                                                     @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "5") int size,
+                                                    @RequestParam(defaultValue = "time") String sortType,
+                                                    @RequestParam(defaultValue = "desc") String direction,
                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         LocalDate now = LocalDate.now();
@@ -36,9 +35,19 @@ public class LogController {
         if (startDate == null) {
             startDate = endDate.minusDays(7);
         }
+
+        String sortField = sortType.equalsIgnoreCase("type") ? "type" : "createdAt";
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(logService.getLogs(type, PageRequest.of(page,size), startDate, endDate));
+                .body(logService.getLogs(type, PageRequest.of(page,size,Sort.by(sortDirection,sortField)), startDate, endDate));
     }
 
+    @GetMapping("/logs/{logId}")
+    public ResponseEntity<LogResponse> getLog(@PathVariable int logId){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(logService.getLog(logId));
+    }
 }
