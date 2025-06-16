@@ -16,7 +16,7 @@ public class TaskRequest {
     @NotNull
     private Priority priority;
 
-    private String managerName;
+    private Long managerId;
     private LocalDateTime deadline;
 
 }

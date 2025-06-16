@@ -1,8 +1,8 @@
 package com.example.outsourcingproject.domain.task.entity;
 
+import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
@@ -19,18 +19,13 @@ public class Task extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // fixme : dev 머지 후 User 엔티티로 연관관계 매핑 필요
-    // @ManyToOne
-    // @JoinColumn(name = "manager_id")
-    // private User manager;
-    @Column(nullable = false)
-    private String managerName;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User manager;
 
-    // @ManyToOne
-    // @JoinColumn(name = "generator_id")
-    // private User generator;
-    @Column(nullable = false)
-    private String generatorName;
+    @ManyToOne
+    @JoinColumn(name = "generator_id")
+    private User generator;
 
     @Column(nullable = false)
     private String title;
@@ -43,6 +38,7 @@ public class Task extends BaseTimeEntity {
 
     @Builder.Default
     private Status status = Status.TODO;
+
     // Status가 IN_PROGRESS 로 변경됐을때의 날짜
     private LocalDateTime startAt;
 
