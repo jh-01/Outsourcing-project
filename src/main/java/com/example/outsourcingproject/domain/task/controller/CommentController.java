@@ -26,4 +26,16 @@ public class CommentController {
 
     }
 
+    // 댓글 수정
+    @PatchMapping("/{task_id}/comments/{id}")
+    public ResponseEntity<CommentResponseDto> changeComment(@PathVariable("task_id") Long taskId,
+                                                            @PathVariable("id") Long commentId,
+                                                            @RequestBody CommentRequestDto requestDto) {
+
+        CommentResponseDto responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents());
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+
 }
