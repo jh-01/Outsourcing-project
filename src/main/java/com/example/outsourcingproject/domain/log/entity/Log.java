@@ -38,4 +38,13 @@ public class Log {
 
     @CreatedDate
     private LocalDate createdAt;
+
+    public Log(int targetId, int userId, LogType type, String method, String url, String ipAddress) {
+        this.targetId = targetId;
+        this.userId = userId;
+        this.type = type;
+        this.method = method;
+        this.url = url;
+        this.ipAddress = ipAddress;
+    }
 }
