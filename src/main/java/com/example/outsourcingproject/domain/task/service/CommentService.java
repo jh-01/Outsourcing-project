@@ -6,6 +6,7 @@ import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,7 @@ public class CommentService {
 
 
     // 댓글 수정 로직
+    @Transactional
     public CommentResponseDto updateComment(Long taskId, Long commentId, String contents) {
 
         // 수정할 댓글 가져오기
@@ -83,6 +86,28 @@ public class CommentService {
 
         // 응답객체를 페이지객체로 변환
         return new PageImpl<>(CommentResponseDtos, pageable, comments.getTotalElements());
+
+    }
+
+
+    // 댓글 삭제 로직 - 소프트 삭제
+    @Transactional
+    public CommentResponseDto softDeleteComment(Long taskId, Long commentId) {
+
+        // 삭제할 댓글 조회
+        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Comment 가 없습니다."));
+
+        // 소프트 삭제 수행
+        comment.setDeleted(true);
+        comment.setDeletedAt(LocalDateTime.now());
+
+        // 삭제한 내용 저장
+        commentRepository.save(comment);
+
+        // 성공시 반환할 data 에 null 할당
+        CommentResponseData data = null;
+
+        return new CommentResponseDto(true, "삭제 성공!", data, comment.getModifiedAt());
 
     }
 

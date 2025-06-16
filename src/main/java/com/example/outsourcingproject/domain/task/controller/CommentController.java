@@ -61,4 +61,15 @@ public class CommentController {
 
     }
 
+    // 댓글 삭제
+    @DeleteMapping("/{task_id}/comments/{id}")
+    public ResponseEntity<CommentResponseDto> deleteComment(@PathVariable("task_id") Long taskId,
+                                                            @PathVariable("id") Long commentId) {
+
+        CommentResponseDto responseDto = commentService.softDeleteComment(taskId, commentId);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+
 }

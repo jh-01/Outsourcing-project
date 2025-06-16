@@ -11,9 +11,12 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
+    // 댓글 조회
     Optional<Comment> findByIdAndTaskId(Long taskId, Long commentId);
 
+    // 댓글 페이지에 담아서 조회
     Page<Comment> findByTaskId(Long taskId, Pageable pageable);
 
+    // keyword 포함된 댓글 조회
     Page<Comment> findByTaskIdAndContentsContaining(Long taskId,String keyword ,Pageable pageable);
 }
