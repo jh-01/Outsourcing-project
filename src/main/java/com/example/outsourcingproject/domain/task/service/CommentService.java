@@ -67,10 +67,16 @@ public class CommentService {
 
 
     // 댓글 조회 로직
-    public Page<CommentResponseDto> getCommentList(Long taskId, Pageable pageable) {
+    public Page<CommentResponseDto> getCommentList(Long taskId, Pageable pageable, String keyword) {
 
         // 댓글 리스트 조회
-        Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
+        Page<Comment> comments;
+
+        if(!(keyword == null) && !keyword.isBlank()) {
+            comments = commentRepository.findByTaskIdAndContentsContaining(taskId, keyword, pageable);
+        } else {
+            comments = commentRepository.findByTaskId(taskId, pageable);
+        }
 
         // 댓글을 응답객체로 변환
         List<CommentResponseDto> CommentResponseDtos = comments.stream().map(CommentResponseDto::toDto).collect(Collectors.toList());
