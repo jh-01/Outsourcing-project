@@ -9,6 +9,7 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
+import com.example.outsourcingproject.global.exception.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,7 +112,7 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("단일 태스크 조회 - 존재하지 않는 태스크로 TaskNotFoundException 발생")
+    @DisplayName("단일 태스크 조회 - 존재하지 않는 태스크로 예외 발생")
     void findTask_존재하지않는태스크_예외발생() {
         // given
         Long nonExistentTaskId = 999L;
@@ -119,13 +120,12 @@ class TaskServiceTest {
         when(taskRepository.findTaskById(nonExistentTaskId)).thenReturn(null);
 
         // when & then
-        TaskNotFoundException exception = assertThrows(
-                TaskNotFoundException.class,
+        CustomException exception = assertThrows(
+                CustomException.class,
                 () -> taskService.findTask(nonExistentTaskId)
         );
 
-        assertThat(exception.getMessage()).contains("존재하지 않는 작업입니다");
-        assertThat(exception.getMessage()).contains("id : " + nonExistentTaskId);
+        assertThat(exception.getMessage()).contains("존재하지 않는 태스크입니다.");
 
         verify(taskRepository).findTaskById(nonExistentTaskId);
     }
