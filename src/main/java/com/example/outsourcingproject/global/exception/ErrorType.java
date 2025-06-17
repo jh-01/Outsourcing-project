@@ -33,7 +33,9 @@ public enum ErrorType {
     // 존재하지 않는 사용자 조회
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다"),
     // 존재하지 않는 태스크 조회
-    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 태스크입니다.")
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 태스크입니다."),
+
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
