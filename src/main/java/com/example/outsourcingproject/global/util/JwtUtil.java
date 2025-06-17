@@ -50,14 +50,13 @@ public class JwtUtil {
     public String createToken(int id, String email) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(id))
-                        .claim("email", email)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(id))
+                .claim("email", email)
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     // "Bearer " 접두사가 붙은 토큰 문자열에서 접두사 제거하고 순수 JWT 토큰 반환
