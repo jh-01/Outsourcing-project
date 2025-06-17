@@ -31,6 +31,11 @@ public class JwtFilter implements Filter {
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
+        if (httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 회원가입, 로그인은 필터 건너뛰고 그대로 진행
         if(requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
             chain.doFilter(request,response);
