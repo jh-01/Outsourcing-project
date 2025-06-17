@@ -2,6 +2,7 @@ package com.example.outsourcingproject.domain.user.service;
 
 import com.example.outsourcingproject.domain.user.dto.UserResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.global.security.PasswordEncoder;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
@@ -37,11 +38,11 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(password);
 
-        User user = new User(username, email, encodedPassword, name);
+        User user = new User(username, email, encodedPassword, name, UserRole.USER);
 
         User saved = userRepository.save(user);
 
-        return ApiResponse.createSuccess("회원가입이 완료되었습니다.", new UserResponseDto(saved.getId(), saved.getUsername(), saved.getEmail(), saved.getName(), saved.getCreatedAt()));
+        return ApiResponse.createSuccess("회원가입이 완료되었습니다.", new UserResponseDto(saved.getId(), saved.getUsername(), saved.getEmail(), saved.getName(), saved.getRole(), saved.getCreatedAt()));
     }
 
     // 현재 유저 정보 조회
@@ -53,7 +54,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorType.INVALID_CREDENTIALS));
 
-        return ApiResponse.createSuccess("사용자 정보를 조회했습니다.", new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getCreatedAt()));
+        return ApiResponse.createSuccess("사용자 정보를 조회했습니다.", new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getRole(), user.getCreatedAt()));
     }
 
     // 유저 비밀번호 수정
@@ -80,7 +81,7 @@ public class UserService {
 
         user.updatePassword(updateNewPassword);
 
-        return ApiResponse.createSuccessWithNoContent("비밀번호가 수정되었습니다.");
+        return ApiResponse.createSuccess("비밀번호가 수정되었습니다.", null);
 
     }
 
@@ -102,7 +103,7 @@ public class UserService {
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
 
-        return ApiResponse.createSuccessWithNoContent("회원탈퇴가 완료되었습니다.");
+        return ApiResponse.createSuccess("회원탈퇴가 완료되었습니다.", null);
     }
 
     // 유저 로그인
