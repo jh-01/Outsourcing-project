@@ -4,7 +4,8 @@ import com.example.outsourcingproject.domain.log.dto.LogResponse;
 import com.example.outsourcingproject.domain.log.entity.Log;
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.log.repository.LogRepository;
-import com.example.outsourcingproject.global.exception.log.LogNotFoundException;
+import com.example.outsourcingproject.global.exception.CustomException;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,7 @@ public class LogService {
     public LogResponse getLog(int logId) {
         Optional<Log> logOpt = logRepository.findById(logId);
         if ( logOpt.isEmpty()) {
-            throw new LogNotFoundException();
+            throw new CustomException(ErrorType.LOG_NOT_FOUND);
         }
 
         return LogResponse.toDto(logOpt.get());
