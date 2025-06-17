@@ -1,10 +1,12 @@
 package com.example.outsourcingproject.domain.task.controller;
 
+import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.request.TaskRequest;
 import com.example.outsourcingproject.domain.task.dto.request.TaskStatusUpdateRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.service.TaskService;
 import com.example.outsourcingproject.global.common.ApiResponse;
+import com.example.outsourcingproject.global.log.annotation.LogWrite;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class TaskController {
     private final TaskService taskService;
 
     // 태스크 생성
+    @LogWrite(type = LogType.TASK_CREATED)
     @PostMapping
     public ApiResponse<TaskResponse> createTask(
             HttpServletRequest request,
@@ -29,21 +32,21 @@ public class TaskController {
         return ApiResponse.createSuccess("태스크가 성공적으로 생성되었습니다.", taskResponse);
     }
 
-    // 태스크 목록 조회
-
     // 태스크 수정
-    @PutMapping("/{taskId}")
+    @LogWrite(type = LogType.TASK_UPDATED)
+    @PutMapping("/{id}")
     public ApiResponse<TaskResponse> updateTask(
             HttpServletRequest request,
             @Valid @RequestBody TaskRequest taskRequest,
-            @PathVariable Long taskId
+            @PathVariable Long id
     ) {
         Long userId = Long.valueOf(request.getAttribute("id").toString());
-        TaskResponse taskResponse = taskService.modifyTask(taskRequest, taskId, userId);
+        TaskResponse taskResponse = taskService.modifyTask(taskRequest, id, userId);
 
         return ApiResponse.createSuccess("태스크가 성공적으로 수정되었습니다.", taskResponse);
     }
     // 태스크 상태 변경
+    @LogWrite(type = LogType.TASK_STATUS_CHANGED)
     @PatchMapping("/{taskId}/status")
     public ApiResponse<TaskResponse> updateTaskStatus(
             HttpServletRequest request,
@@ -57,13 +60,14 @@ public class TaskController {
     }
 
     // 태스크 삭제
-    @DeleteMapping("/{taskId}")
+    @LogWrite(type = LogType.TASK_DELETED)
+    @DeleteMapping("/{id}")
     public ApiResponse<?> deleteTask(
             HttpServletRequest request,
-            @PathVariable Long taskId
+            @PathVariable Long id
     ) {
         Long userId = Long.valueOf(request.getAttribute("id").toString());
-        taskService.softDelete(taskId, userId);
+        taskService.softDelete(id, userId);
 
         return ApiResponse.createSuccessWithNoContent("삭제 완료");
     }
