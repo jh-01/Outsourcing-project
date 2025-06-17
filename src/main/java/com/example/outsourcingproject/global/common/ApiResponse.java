@@ -1,6 +1,8 @@
 package com.example.outsourcingproject.global.common;
 
+import com.example.outsourcingproject.domain.dashboard.dto.DashboardResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -36,5 +38,17 @@ public class ApiResponse<T> {
         this.message = message;
         this.data = data;
         this.timestamp = timestamp;
+    }
+
+    public static <T> ApiResponse<T> ok(String message, @Nullable final T data) {
+        return new ApiResponse<>(true, message, data, LocalDateTime.now());
+    }
+
+    public static <T> ApiResponse<T> created(String message, @Nullable final T data) {
+        return new ApiResponse<>(true, message, data, LocalDateTime.now());
+    }
+
+    public static <T> ApiResponse<T> fail(final com.example.outsourcingproject.domain.common.exception.CustomException e) {
+        return new ApiResponse<>(false, e.getMessage(), null, LocalDateTime.now());
     }
 }
