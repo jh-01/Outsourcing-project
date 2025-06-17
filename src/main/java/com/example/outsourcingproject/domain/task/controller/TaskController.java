@@ -78,10 +78,8 @@ public class TaskController {
     // 태스크 리스트 조회
     @GetMapping
     public ApiResponse<?> getTaskList(
-            HttpServletRequest request,
             @ModelAttribute TaskReadRequest taskReadRequest
             ){
-        Long userId = Long.valueOf(request.getAttribute("id").toString());
         List<TaskResponse> taskList = taskService.findTasks(taskReadRequest);
         return ApiResponse.createSuccess("조회 성공", taskList);
     }
