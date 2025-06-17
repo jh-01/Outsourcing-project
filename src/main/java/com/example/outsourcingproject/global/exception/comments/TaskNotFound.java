@@ -1,16 +1,16 @@
 package com.example.outsourcingproject.global.exception.comments;
 
-import com.example.outsourcingproject.global.exception.Errorcode;
+import com.example.outsourcingproject.global.exception.ErrorType;
 
 public class TaskNotFound extends RuntimeException {
-    private Errorcode errorcode;
+    private ErrorType errorType;
 
-    public TaskNotFound(Errorcode errorcode) {
-        super(errorcode.getMessages());
-        this.errorcode = errorcode;
+    public TaskNotFound(ErrorType errorType) {
+        super(errorType.getErrorMessage());
+        this.errorType = errorType;
     }
 
-    public Errorcode getErrorcode() {
-        return errorcode;
+    public ErrorType getErrorType() {
+        return errorType;
     }
 }

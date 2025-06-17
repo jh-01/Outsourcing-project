@@ -1,16 +1,16 @@
 package com.example.outsourcingproject.global.exception.comments;
 
-import com.example.outsourcingproject.global.exception.Errorcode;
+import com.example.outsourcingproject.global.exception.ErrorType;
 
 public class CommentNotFound extends RuntimeException {
-    private Errorcode errorcode;
+    private ErrorType errorType;
 
-    public CommentNotFound(Errorcode errorcode) {
-        super(errorcode.getMessages());
-        this.errorcode = errorcode;
+    public CommentNotFound(ErrorType errorType) {
+        super(errorType.getErrorMessage());
+        this.errorType = errorType;
     }
 
-    public Errorcode getErrorcode() {
-        return errorcode;
+    public ErrorType getErrorType() {
+        return errorType;
     }
 }

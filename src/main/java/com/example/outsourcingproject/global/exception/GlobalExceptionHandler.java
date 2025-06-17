@@ -22,18 +22,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CommentNotFound.class)
     public ResponseEntity<CommentErrorDto> CommentNotFoundExp(CommentNotFound e) {
-        Errorcode errorcode = e.getErrorcode();
+        ErrorType errorType = e.getErrorType();
         return ResponseEntity
-                .status(errorcode.getStatus())
-                .body(new CommentErrorDto(e.getErrorcode().COMMENT_NOT_FOUND.getMessages()));
+                .status(errorType.getHttpStatus())
+                .body(new CommentErrorDto(e.getErrorType().COMMENT_NOT_FOUND.getErrorMessage()));
     }
 
     @ExceptionHandler
     public ResponseEntity<CommentErrorDto> TaskNotFoundExp(TaskNotFound e) {
-        Errorcode errorcode = e.getErrorcode();
+        ErrorType errorType = e.getErrorType();
         return ResponseEntity
-                .status(errorcode.getStatus())
-                .body(new CommentErrorDto(e.getErrorcode().TASK_NOT_FOUND.getMessages()));
+                .status(errorType.getHttpStatus())
+                .body(new CommentErrorDto(e.getErrorType().TASK_NOT_FOUND.getErrorMessage()));
     }
 
 

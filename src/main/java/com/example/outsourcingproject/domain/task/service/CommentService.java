@@ -6,7 +6,7 @@ import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
-import com.example.outsourcingproject.global.exception.Errorcode;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import com.example.outsourcingproject.global.exception.comments.CommentNotFound;
 import com.example.outsourcingproject.global.exception.comments.TaskNotFound;
 import jakarta.transaction.Transactional;
@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +33,7 @@ public class CommentService {
         Comment comment = new Comment(contents);
 
         // taskId 로 task 조회
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFound(Errorcode.TASK_NOT_FOUND));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFound(ErrorType.TASK_NOT_FOUND));
 
         // 댓글 저장
         comment.setTask(task);
@@ -55,7 +53,7 @@ public class CommentService {
 
         // 수정할 댓글 가져오기
         Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).
-                orElseThrow(() -> new CommentNotFound(Errorcode.COMMENT_NOT_FOUND));
+                orElseThrow(() -> new CommentNotFound(ErrorType.COMMENT_NOT_FOUND));
 
         // 댓글 수정
         comment.setContents(contents);
@@ -98,7 +96,7 @@ public class CommentService {
     public CommentResponseDto softDeleteComment(Long taskId, Long commentId) {
 
         // 삭제할 댓글 조회
-        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new CommentNotFound(Errorcode.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new CommentNotFound(ErrorType.COMMENT_NOT_FOUND));
 
         // 소프트 삭제 수행
         comment.setDeleted(true);
