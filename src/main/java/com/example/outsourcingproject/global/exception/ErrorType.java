@@ -29,7 +29,12 @@ public enum ErrorType {
     // 잘못된 요청 형식
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다"),
     // 로그를 찾지 못함
-    LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 로그를 찾을 수 없습니다.");
+    LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 로그를 찾을 수 없습니다."),
+    // 존재하지 않는 사용자 조회
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다"),
+    // 존재하지 않는 태스크 조회
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 태스크입니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
