@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.task.service;
 
 import com.example.outsourcingproject.domain.task.dto.request.TaskRequest;
 import com.example.outsourcingproject.domain.task.dto.request.TaskStatusUpdateRequest;
+import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
+import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.task.entity.Task;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +32,10 @@ public class TaskService {
         LocalDateTime deadline = validateDeadline(taskRequest.getDeadline());
 
         User foundUser = userRepository
-                .findById(userId).orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
+                .findById(userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         User foundManager = userRepository
                 .findById(taskRequest.getManagerId())
-                .orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         Task task = Task.builder()
                 .title(taskRequest.getTitle())
@@ -53,7 +56,7 @@ public class TaskService {
     public TaskResponse modifyTask(TaskRequest taskRequest, Long taskId, Long userId) {
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
         User foundManager = userRepository.findById(taskRequest.getManagerId())
-                .orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         validateTaskAccessPermission(foundTask, userId);
 
@@ -80,8 +83,7 @@ public class TaskService {
 
         foundTask.setStatus(statusUpdateRequest.getStatus());
         // IN_PROGRESS 일때 시작시간 저장
-        if(statusUpdateRequest.getStatus().equals(Status.IN_PROGRESS))
-        {
+        if (statusUpdateRequest.getStatus().equals(Status.IN_PROGRESS)) {
             foundTask.setStartAt(LocalDateTime.now());
         }
 
@@ -104,11 +106,9 @@ public class TaskService {
         LocalDateTime resolvedDeadline = deadline != null
                 ? deadline
                 : LocalDateTime.now().plusWeeks(1); // 기본값: 현재 시간 + 1주
-
         if (resolvedDeadline.isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorType.INVALID_DEADLINE);
         }
-
         return resolvedDeadline;
     }
 
@@ -129,6 +129,7 @@ public class TaskService {
 
     private static TaskResponse convertToResponse(Task task) {
         return TaskResponse.builder()
+                .id(task.getId())
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .managerName(task.getManager().getName())
@@ -138,7 +139,7 @@ public class TaskService {
                 .status(task.getStatus())
                 .startAt(task.getStartAt())
                 .createdAt(task.getCreatedAt())
-                .lastModifiedAt(task.getModifiedAt())
+                .modifiedAt(task.getModifiedAt())
                 .build();
     }
 
@@ -151,5 +152,29 @@ public class TaskService {
     private boolean isTaskAccessible(Task task, Long userId) {
         return (task.getGenerator().getId() == userId)
                 || (task.getManager().getId() == userId);
+    }
+
+    public List<TaskResponse> findTasks(TaskReadRequest request) {
+        return taskRepository.findTasks(request);
+    }
+
+    public TaskResponse findTask(Long id) {
+        TaskResponse response = taskRepository.findTaskById(id);
+        if (response == null) {
+            throw new CustomException(ErrorType.TASK_NOT_FOUND);
+        }
+        return response;
+    }
+
+    public List<TaskResponse> findTasksByUserId(Long userId) {
+        List<TaskResponse> taskList = taskRepository.findTasks(new TaskReadRequest(userId));
+        if (taskList.isEmpty()) {
+            throw new CustomException(ErrorType.TASK_NOT_FOUND);
+        }
+        return taskList;
+    }
+
+    public TaskOutline findDashboard(){
+        return taskRepository.findDashboard();
     }
 }

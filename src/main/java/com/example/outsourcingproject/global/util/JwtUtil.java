@@ -24,6 +24,7 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     // 애플리케이션 설정 파일에서 주입받은 비밀 키
     @Value("${jwt.secret.key}")
+//    @Value("${jwt.secret.key:SUpZQkM1NjhBTkd2UXhaaVZ2eGpPRnpoQ2w1MkJTVG5EZlJLaU4=}")
     private String secretKey;
     // 실제 서명에 사용되는 키 객체
     private Key key;
@@ -49,14 +50,13 @@ public class JwtUtil {
     public String createToken(int id, String email) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(id))
-                        .claim("email", email)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(id))
+                .claim("email", email)
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     // "Bearer " 접두사가 붙은 토큰 문자열에서 접두사 제거하고 순수 JWT 토큰 반환

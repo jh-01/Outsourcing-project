@@ -31,6 +31,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private UserRole role;
+
     @Column(updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
@@ -40,11 +42,12 @@ public class User {
 
     private LocalDateTime deletedAt;
 
-    public User(String username, String email, String password, String name) {
+    public User(String username, String email, String password, String name, UserRole role) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.role = role;
     }
 
     public User() {

@@ -12,19 +12,20 @@ import java.time.LocalDateTime;
 @Table(name = "task")
 @Setter
 @Getter
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Task extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "manager_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
 
-    @ManyToOne
-    @JoinColumn(name = "generator_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "generator_id", nullable = false)
     private User generator;
 
     @Column(nullable = false, length = 30)
@@ -32,21 +33,18 @@ public class Task extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
     private LocalDateTime deadline;
 
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = Status.TODO;
 
-    // Status가 IN_PROGRESS 로 변경됐을때의 날짜
     private LocalDateTime startAt;
 
     @Builder.Default
     private boolean isDeleted = false;
-    // 삭제됐을때 시간
     private LocalDateTime deletedAt;
-
-    public Task() {
-    }
 }

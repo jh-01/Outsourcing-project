@@ -2,36 +2,42 @@ package com.example.outsourcingproject.domain.task.dto.response;
 
 import com.example.outsourcingproject.domain.task.entity.Priority;
 import com.example.outsourcingproject.domain.task.entity.Status;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
 public class TaskResponse {
+    // id 추가됨
+    private Long id;
+    private String managerName;
+    private String generatorName;
+    private String title;
+    private String description;
+    private Priority priority;
+    private LocalDateTime deadline;
+    private Status status;
+    private LocalDateTime startAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
-    private final String title;
-    private final String description;
-    private final Priority priority;
-    private final String managerName;
-    private final String generatorName;
-    private final LocalDateTime deadline;
-    private final Status status;
-    private final LocalDateTime startAt;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime lastModifiedAt;
-
-    public TaskResponse(String title, String description, Priority priority, String managerName, String generatorName, LocalDateTime deadline, Status status,LocalDateTime startAt, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+    @QueryProjection
+    public TaskResponse(Long id, String managerName, String generatorName, String title, String description, Priority priority, LocalDateTime deadline, Status status, LocalDateTime startAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.id = id;
+        this.managerName = managerName;
+        this.generatorName = generatorName;
         this.title = title;
         this.description = description;
         this.priority = priority;
-        this.managerName = managerName;
-        this.generatorName = generatorName;
         this.deadline = deadline;
         this.status = status;
         this.startAt = startAt;
         this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
+        this.modifiedAt = modifiedAt;
     }
 }

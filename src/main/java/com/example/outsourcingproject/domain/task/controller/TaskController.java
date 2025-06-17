@@ -9,8 +9,11 @@ import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.log.annotation.LogWrite;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -62,14 +65,30 @@ public class TaskController {
     // 태스크 삭제
     @LogWrite(type = LogType.TASK_DELETED)
     @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteTask(
+    public ApiResponse<Void> deleteTask(
             HttpServletRequest request,
             @PathVariable Long id
     ) {
         Long userId = Long.valueOf(request.getAttribute("id").toString());
         taskService.softDelete(id, userId);
 
-        return ApiResponse.createSuccessWithNoContent("삭제 완료");
+        return ApiResponse.createSuccess("삭제 완료", null);
     }
 
+    // 태스크 리스트 조회
+    @GetMapping
+    public ApiResponse<?> getTaskList(
+            @ModelAttribute TaskReadRequest request
+            ){
+
+        List<TaskResponse> taskList = taskService.findTasks(request);
+        return ApiResponse.createSuccess("조회 성공", taskList);
+    }
+
+    // 태스크 단건 조회
+    @GetMapping("/{id}")
+    public ApiResponse<?> getTask(@PathVariable @NotNull Long id){
+        TaskResponse task = taskService.findTask(id);
+        return ApiResponse.createSuccess("조회 성공", task);
+    }
 }
