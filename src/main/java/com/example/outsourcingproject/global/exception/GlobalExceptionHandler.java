@@ -19,24 +19,6 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(CommentNotFound.class)
-    public ResponseEntity<ApiResponse<?>> CommentNotFoundExp(CustomException customException) {
-        ApiResponse<?> response = ApiResponse.createError(customException);
-        return ResponseEntity
-                .status(customException.getErrorType().getHttpStatus())
-                .body(response);
-    }
-
-    @ExceptionHandler(TaskNotFound.class)
-    public ResponseEntity<ApiResponse<?>> TaskNotFoundExp(CustomException customException) {
-        ApiResponse<?> response = ApiResponse.createError(customException);
-        return ResponseEntity
-                .status(customException.getErrorType().getHttpStatus())
-                .body(response);
-    }
-
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldError().getDefaultMessage();
