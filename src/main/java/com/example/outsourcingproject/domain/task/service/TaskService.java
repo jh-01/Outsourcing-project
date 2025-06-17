@@ -101,7 +101,7 @@ public class TaskService {
         foundTask.setDeletedAt(LocalDateTime.now());
     }
 
-    public static LocalDateTime validateDeadline(LocalDateTime deadline) {
+    public LocalDateTime validateDeadline(LocalDateTime deadline) {
 
         LocalDateTime resolvedDeadline = deadline != null
                 ? deadline
@@ -113,7 +113,7 @@ public class TaskService {
     }
 
     // 변경 가능한 status 인지 확인
-    public static void validateStatusTransition(Status currentStatus, Status newStatus) {
+    public void validateStatusTransition(Status currentStatus, Status newStatus) {
         boolean isValidTransition = false;
 
         if (currentStatus == Status.TODO && newStatus == Status.IN_PROGRESS) {
@@ -127,7 +127,7 @@ public class TaskService {
         }
     }
 
-    private static TaskResponse convertToResponse(Task task) {
+    public TaskResponse convertToResponse(Task task) {
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -143,13 +143,13 @@ public class TaskService {
                 .build();
     }
 
-    private void validateTaskAccessPermission(Task task, Long userId) {
+    public void validateTaskAccessPermission(Task task, Long userId) {
         if (!isTaskAccessible(task, userId)) {
             throw new CustomException(ErrorType.TASK_ACCESS_DENIED);
         }
     }
 
-    private boolean isTaskAccessible(Task task, Long userId) {
+    public boolean isTaskAccessible(Task task, Long userId) {
         return (task.getGenerator().getId() == userId)
                 || (task.getManager().getId() == userId);
     }
