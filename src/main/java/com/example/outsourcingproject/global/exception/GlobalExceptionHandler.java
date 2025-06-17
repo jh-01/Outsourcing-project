@@ -1,9 +1,8 @@
 package com.example.outsourcingproject.global.exception;
 
-import com.example.outsourcingproject.global.exception.comments.CommentErrorDto;
 import com.example.outsourcingproject.global.exception.comments.CommentNotFound;
-import com.example.outsourcingproject.global.exception.comments.TaskNotFound;
 import com.example.outsourcingproject.global.common.ApiResponse;
+import com.example.outsourcingproject.global.exception.comments.TaskNotFound;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,19 +20,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommentNotFound.class)
-    public ResponseEntity<CommentErrorDto> CommentNotFoundExp(CommentNotFound e) {
-        ErrorType errorType = e.getErrorType();
+    public ResponseEntity<ApiResponse<?>> CommentNotFoundExp(CustomException customException) {
+        ApiResponse<?> response = ApiResponse.createError(customException);
         return ResponseEntity
-                .status(errorType.getHttpStatus())
-                .body(new CommentErrorDto(e.getErrorType().COMMENT_NOT_FOUND.getErrorMessage()));
+                .status(customException.getErrorType().getHttpStatus())
+                .body(response);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<CommentErrorDto> TaskNotFoundExp(TaskNotFound e) {
-        ErrorType errorType = e.getErrorType();
+    @ExceptionHandler(TaskNotFound.class)
+    public ResponseEntity<ApiResponse<?>> TaskNotFoundExp(CustomException customException) {
+        ApiResponse<?> response = ApiResponse.createError(customException);
         return ResponseEntity
-                .status(errorType.getHttpStatus())
-                .body(new CommentErrorDto(e.getErrorType().TASK_NOT_FOUND.getErrorMessage()));
+                .status(customException.getErrorType().getHttpStatus())
+                .body(response);
     }
 
 
