@@ -1,10 +1,8 @@
 package com.example.outsourcingproject.global.exception;
 
+import com.example.outsourcingproject.global.exception.comments.CommentErrorDto;
 import com.example.outsourcingproject.global.exception.comments.CommentNotFound;
 import com.example.outsourcingproject.global.exception.comments.TaskNotFound;
-import com.example.outsourcingproject.global.exception.entity.ErrorResponse;
-import com.example.outsourcingproject.global.exception.log.LogNotFoundException;
-import org.springframework.http.HttpStatus;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,19 +21,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommentNotFound.class)
-    public ResponseEntity<ErrorResponse> CommentNotFoundExp(CommentNotFound e) {
+    public ResponseEntity<CommentErrorDto> CommentNotFoundExp(CommentNotFound e) {
         Errorcode errorcode = e.getErrorcode();
         return ResponseEntity
                 .status(errorcode.getStatus())
-                .body(new ErrorResponse(e.getErrorcode().COMMENT_NOT_FOUND.getMessages()));
+                .body(new CommentErrorDto(e.getErrorcode().COMMENT_NOT_FOUND.getMessages()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> TaskNotFoundExp(TaskNotFound e) {
+    public ResponseEntity<CommentErrorDto> TaskNotFoundExp(TaskNotFound e) {
         Errorcode errorcode = e.getErrorcode();
         return ResponseEntity
                 .status(errorcode.getStatus())
-                .body(new ErrorResponse(e.getErrorcode().TASK_NOT_FOUND.getMessages()));
+                .body(new CommentErrorDto(e.getErrorcode().TASK_NOT_FOUND.getMessages()));
     }
 
 
