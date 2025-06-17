@@ -1,8 +1,6 @@
 package com.example.outsourcingproject.global.exception;
 
-import com.example.outsourcingproject.global.exception.comments.CommentNotFound;
 import com.example.outsourcingproject.global.common.ApiResponse;
-import com.example.outsourcingproject.global.exception.comments.TaskNotFound;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
