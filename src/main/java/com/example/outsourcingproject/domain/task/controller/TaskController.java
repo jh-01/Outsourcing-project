@@ -1,9 +1,11 @@
 package com.example.outsourcingproject.domain.task.controller;
 
+import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.service.TaskService;
 import com.example.outsourcingproject.global.common.ApiResponse;
+import com.example.outsourcingproject.global.log.annotation.LogWrite;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

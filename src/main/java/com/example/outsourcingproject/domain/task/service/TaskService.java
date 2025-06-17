@@ -27,6 +27,14 @@ public class TaskService {
         return response;
     }
 
+    public List<TaskResponse> findTasksByUserId(Long userId){
+        List<TaskResponse> taskList = taskRepository.findTasks(new TaskReadRequest(userId));
+        if(taskList.isEmpty()){
+            throw new CustomException(ErrorType.TASK_NOT_FOUND);
+        }
+        return taskList;
+    }
+
     public TaskOutline findDashboard(){
         return taskRepository.findDashboard();
     }

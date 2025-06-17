@@ -1,8 +1,10 @@
 package com.example.outsourcingproject.domain.dashboard.controller;
 
 import com.example.outsourcingproject.domain.dashboard.service.DashboardService;
+import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.user.service.UserService;
 import com.example.outsourcingproject.global.common.ApiResponse;
+import com.example.outsourcingproject.global.log.annotation.LogWrite;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
