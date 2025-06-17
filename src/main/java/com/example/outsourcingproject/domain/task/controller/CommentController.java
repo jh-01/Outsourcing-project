@@ -1,9 +1,11 @@
 package com.example.outsourcingproject.domain.task.controller;
 
+import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.CommentRequestDto;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.service.CommentService;
+import com.example.outsourcingproject.global.log.annotation.LogWrite;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,7 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 생성
+    @LogWrite(type = LogType.COMMENT_CREATED)
     @PostMapping("/{task_id}/comments")
     public ResponseEntity<CommentResponseDto> createComment(@PathVariable("task_id") Long taskId,
                                                             @Valid @RequestBody CommentRequestDto requestDto) {

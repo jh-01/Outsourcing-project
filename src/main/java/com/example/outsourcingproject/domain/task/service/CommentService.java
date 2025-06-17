@@ -23,13 +23,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
-    private TaskRepository taskRepository;
+    private final CommentRepository commentRepository;
+    private final TaskRepository taskRepository;
 
     // 댓글 생성 로직
     public final CommentResponseDto addComment(Long taskId, String contents) {
 
         Comment comment = new Comment(contents);
+
+//        System.out.println(" taskRepository: " + taskRepository);
 
         // taskId 로 task 조회
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new CustomException(ErrorType.TASK_NOT_FOUND));
