@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -26,9 +26,9 @@ public class LogController {
                                                     @RequestParam(defaultValue = "5") int size,
                                                     @RequestParam(defaultValue = "time") String sortType,
                                                     @RequestParam(defaultValue = "desc") String direction,
-                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        LocalDate now = LocalDate.now();
+                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
+                                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
         if (endDate == null) {
             endDate = now;
         }
