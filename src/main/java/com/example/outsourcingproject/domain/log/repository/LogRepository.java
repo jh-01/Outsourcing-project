@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface LogRepository extends JpaRepository<Log, Integer> {
-    Page<Log> findByCreatedAtBetween(LocalDate createdAtAfter, LocalDate createdAtBefore, Pageable pageable);
+    Page<Log> findByCreatedAtBetween(LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
 
-    Page<Log> findByTypeAndCreatedAtBetween(LogType type, LocalDate createdAtAfter, LocalDate createdAtBefore, Pageable pageable);
+    Page<Log> findByTypeAndCreatedAtBetween(LogType type, LocalDateTime createdAt, LocalDateTime createdAt2, Pageable pageable);
 }

@@ -4,12 +4,14 @@ import com.example.outsourcingproject.domain.log.dto.LogResponse;
 import com.example.outsourcingproject.domain.log.entity.Log;
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.log.repository.LogRepository;
+import com.example.outsourcingproject.global.exception.CustomException;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -17,7 +19,7 @@ import java.util.Optional;
 public class LogService {
     private final LogRepository logRepository;
 
-    public Page<LogResponse> getLogs(LogType type, Pageable pageable, LocalDate startDate, LocalDate endDate) {
+    public Page<LogResponse> getLogs(LogType type, Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
         Page<Log> logPage;
         if ( type == LogType.ALL ){
             logPage = logRepository.findByCreatedAtBetween(startDate,endDate,pageable);
@@ -31,6 +33,9 @@ public class LogService {
 
     public LogResponse getLog(int logId) {
         Optional<Log> logOpt = logRepository.findById(logId);
+        if ( logOpt.isEmpty()) {
+            throw new CustomException(ErrorType.LOG_NOT_FOUND);
+        }
 
         return LogResponse.toDto(logOpt.get());
     }
