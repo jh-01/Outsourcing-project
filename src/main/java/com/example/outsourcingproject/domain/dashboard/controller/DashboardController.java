@@ -21,6 +21,6 @@ public class DashboardController {
     public ApiResponse<?> getDashboard() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        Long userId = Long.parseLong(authentication.getName());
-        return ApiResponse.ok("대시보드 조회 성공", dashboardService.getDashboard(1L));
+        return ApiResponse.createSuccess("대시보드 조회 성공", dashboardService.getDashboard(1L));
     }
 }

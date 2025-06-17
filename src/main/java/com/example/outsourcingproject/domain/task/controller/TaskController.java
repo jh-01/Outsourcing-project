@@ -24,12 +24,12 @@ public class TaskController {
             ){
 
         List<TaskResponse> taskList = taskService.findTasks(request);
-        return ApiResponse.ok("조회 성공", taskList);
+        return ApiResponse.createSuccess("조회 성공", taskList);
     }
 
     @GetMapping("/{id}")
     public ApiResponse<?> getTask(@PathVariable @NotNull Long id){
         TaskResponse task = taskService.findTask(id);
-        return ApiResponse.ok("조회 성공", task);
+        return ApiResponse.createSuccess("조회 성공", task);
     }
 }
