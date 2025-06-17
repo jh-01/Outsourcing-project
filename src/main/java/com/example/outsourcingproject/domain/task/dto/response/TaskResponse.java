@@ -2,6 +2,7 @@ package com.example.outsourcingproject.domain.task.dto.response;
 
 import com.example.outsourcingproject.domain.task.entity.Priority;
 import com.example.outsourcingproject.domain.task.entity.Status;
+import com.example.outsourcingproject.global.log.LoggableResponse;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @NoArgsConstructor
-public class TaskResponse {
+public class TaskResponse implements LoggableResponse {
+    // id 추가됨
     private Long id;
     private String managerName;
     private String generatorName;
@@ -38,5 +40,10 @@ public class TaskResponse {
         this.startAt = startAt;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+    @Override
+    public int getTargetId() {
+        return id.intValue();
     }
 }

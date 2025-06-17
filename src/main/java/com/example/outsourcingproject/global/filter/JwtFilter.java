@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -32,6 +31,11 @@ public class JwtFilter implements Filter {
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
+        if (httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 회원가입, 로그인은 필터 건너뛰고 그대로 진행
         if(requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
             chain.doFilter(request,response);
@@ -49,7 +53,7 @@ public class JwtFilter implements Filter {
 
         try {
             // JWT 유효성 검사와 claims 추출
-            Claims claims = jwtUtil.extractClaims(jwt);
+            Claims claims = jwtUtil. extractClaims(jwt);
             if (claims == null) {
                 httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;

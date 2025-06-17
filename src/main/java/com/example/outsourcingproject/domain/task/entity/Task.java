@@ -28,30 +28,23 @@ public class Task extends BaseTimeEntity {
     @JoinColumn(name = "generator_id", nullable = false)
     private User generator;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String title;
-
-    @Column()
     private String description;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column
     private Priority priority;
 
-    @Column()
     private LocalDateTime deadline;
 
     @Enumerated(EnumType.STRING)
-    @Column
-    private Status status;
+    @Builder.Default
+    private Status status = Status.TODO;
 
-    @Column()
     private LocalDateTime startAt;
 
-    @Column()
-    private boolean isDeleted;
-
-    @Column()
+    @Builder.Default
+    private boolean isDeleted = false;
     private LocalDateTime deletedAt;
-
 }
