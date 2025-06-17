@@ -33,7 +33,7 @@ public class UserController {
     }
 
     // 유저 탈퇴
-    @DeleteMapping("/auth/withdraw")
+    @PostMapping("/auth/withdraw")
     public ApiResponse<?> withdraw(@Valid @RequestBody UserWithdrawRequestDto requestDto, @RequestHeader("Authorization") String authorizationHeader){
         return userService.withdraw(requestDto.getPassword(), authorizationHeader);
     }
