@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ApiResponse<T> {
 
-    private boolean status;
+    private boolean success;
     private String message;
     private T data;
     private LocalDateTime timestamp;
@@ -33,8 +33,8 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, message, null, LocalDateTime.now());
     }
 
-    private ApiResponse(boolean status, String message,  T data, LocalDateTime timestamp) {
-        this.status = status;
+    private ApiResponse(boolean success, String message,  T data, LocalDateTime timestamp) {
+        this.success = success;
         this.message = message;
         this.data = data;
         this.timestamp = timestamp;

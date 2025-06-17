@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -120,7 +122,12 @@ public class UserService {
             throw new CustomException(ErrorType.INVALID_CREDENTIALS);
         }
 
-        return ApiResponse.createSuccess("로그인이 완료되었습니다.", jwtUtil.createToken(user.getId(), user.getEmail()));
+        String token = jwtUtil.createToken(user.getId(), user.getEmail());
+
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+
+        return ApiResponse.createSuccess("로그인이 완료되었습니다.", tokenMap);
     }
 
     // 존재하는 유저인지 확인
