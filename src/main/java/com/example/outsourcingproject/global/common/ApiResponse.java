@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.global.common;
 
-import com.example.outsourcingproject.domain.dashboard.dto.DashboardResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
