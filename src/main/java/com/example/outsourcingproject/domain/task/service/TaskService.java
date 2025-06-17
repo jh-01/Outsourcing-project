@@ -8,6 +8,8 @@ import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.global.exception.CustomException;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +29,10 @@ public class TaskService {
         LocalDateTime deadline = validateDeadline(taskRequest.getDeadline());
 
         User foundUser = userRepository
-                .findById(userId).orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
-        User foundManager = userRepository.findById(taskRequest.getManagerId())
-                .orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
-        // TODO : UserNotFoundException	404 NOT_FOUND
+                .findById(userId).orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
+        User foundManager = userRepository
+                .findById(taskRequest.getManagerId())
+                .orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
 
         Task task = Task.builder()
                 .title(taskRequest.getTitle())
@@ -47,13 +49,11 @@ public class TaskService {
     }
 
     // 태스크 수정
-    // fixme : setManager
     @Transactional
     public TaskResponse modifyTask(TaskRequest taskRequest, Long taskId, Long userId) {
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
         User foundManager = userRepository.findById(taskRequest.getManagerId())
-                .orElseThrow(()-> new RuntimeException("존재하지 않는 유저입니다."));
-        // TODO : UserNotFoundException	404 NOT_FOUND
+                .orElseThrow(()-> new CustomException(ErrorType.USER_NOT_FOUND));
 
         validateTaskAccessPermission(foundTask, userId);
 
@@ -71,7 +71,7 @@ public class TaskService {
     // 태스크 상태 수정
     @Transactional
     public TaskResponse modifyTaskStatus(TaskStatusUpdateRequest statusUpdateRequest, Long taskId, Long userId) {
-        // TODO 인증/인가 : manager , generator만 가능
+
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
 
         validateTaskAccessPermission(foundTask, userId);
@@ -90,7 +90,7 @@ public class TaskService {
 
     @Transactional
     public void softDelete(Long taskId, Long userId) {
-        // TODO 인증/인가 : manager , generator만 가능
+
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
 
         validateTaskAccessPermission(foundTask, userId);
@@ -106,8 +106,7 @@ public class TaskService {
                 : LocalDateTime.now().plusWeeks(1); // 기본값: 현재 시간 + 1주
 
         if (resolvedDeadline.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("마감시간이 현재시간보다 과거임");
-            // TODO : InvalidDeadlineException 400 BAD_REQUEST
+            throw new CustomException(ErrorType.INVALID_DEADLINE);
         }
 
         return resolvedDeadline;
@@ -124,11 +123,7 @@ public class TaskService {
         }
 
         if (!isValidTransition) {
-            throw new RuntimeException(
-                    String.format("'%s'에서 '%s'로 변경할 수 없습니다.",
-                            currentStatus.name(), newStatus.name())
-            );
-            // TODO : InvalidTaskStatusTransitionException 400 BAD_REQUEST
+            throw new CustomException(ErrorType.INVALID_TASK_STATUS_TRANSITION);
         }
     }
 
@@ -136,7 +131,6 @@ public class TaskService {
         return TaskResponse.builder()
                 .title(task.getTitle())
                 .description(task.getDescription())
-                // fixme
                 .managerName(task.getManager().getName())
                 .generatorName(task.getGenerator().getName())
                 .priority(task.getPriority())
@@ -150,8 +144,7 @@ public class TaskService {
 
     private void validateTaskAccessPermission(Task task, Long userId) {
         if (!isTaskAccessible(task, userId)) {
-            throw new RuntimeException("접근 권한이 없습니다.");
-            // 	TODO : TaskAccessDeniedException 403 FORBIDDEN
+            throw new CustomException(ErrorType.TASK_ACCESS_DENIED);
         }
     }
 

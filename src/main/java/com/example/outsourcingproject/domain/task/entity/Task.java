@@ -27,7 +27,7 @@ public class Task extends BaseTimeEntity {
     @JoinColumn(name = "generator_id")
     private User generator;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String title;
     private String description;
 
