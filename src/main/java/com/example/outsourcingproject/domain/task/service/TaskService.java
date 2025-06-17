@@ -1,14 +1,12 @@
 package com.example.outsourcingproject.domain.task.service;
 
-import com.example.outsourcingproject.domain.dashboard.dto.DashboardResponse;
 import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
-import com.example.outsourcingproject.domain.task.repository.QTaskRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
-import com.example.outsourcingproject.global.exception.task.TaskNotFoundException;
+import com.example.outsourcingproject.global.exception.CustomException;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class TaskService {
     public TaskResponse findTask(Long id){
         TaskResponse response = taskRepository.findTaskById(id);
         if(response == null){
-            throw new TaskNotFoundException("존재하지 않는 작업입니다. id : " + id);
+            throw new CustomException(ErrorType.TASK_NOT_FOUND);
         }
         return response;
     }

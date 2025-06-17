@@ -3,11 +3,15 @@ package com.example.outsourcingproject.domain.task.dto.response;
 import com.example.outsourcingproject.domain.task.entity.Priority;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
+@NoArgsConstructor
 public class TaskResponse {
     private Long id;
     private String managerName;

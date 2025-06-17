@@ -4,6 +4,8 @@ import com.example.outsourcingproject.domain.dashboard.service.DashboardService;
 import com.example.outsourcingproject.domain.user.service.UserService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +18,9 @@ public class DashboardController {
     private final UserService userService;
 
     @GetMapping
-    public ApiResponse<?> getDashboard(
-            // @AuthenticationPrincipal Long userId
-    ){
-        return ApiResponse.ok("대시보드 조회 성공", dashboardService.getDashboard(1L));
+    public ApiResponse<?> getDashboard() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+        return ApiResponse.ok("대시보드 조회 성공", dashboardService.getDashboard(userId));
     }
 }

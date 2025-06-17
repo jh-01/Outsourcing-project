@@ -123,4 +123,9 @@ public class UserService {
         return ApiResponse.createSuccess("로그인이 완료되었습니다.", jwtUtil.createToken(user.getId(), user.getEmail()));
     }
 
+    // 존재하는 유저인지 확인
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
 }
