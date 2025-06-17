@@ -32,8 +32,8 @@ public class JwtFilter implements Filter {
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
-        // 회원가입은 필터 건너뛰고 그대로 진행
-        if(requestURI.equals("/api/auth/register")) {
+        // 회원가입, 로그인은 필터 건너뛰고 그대로 진행
+        if(requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
             chain.doFilter(request,response);
             return;
         }
@@ -55,7 +55,7 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            httpRequest.setAttribute("id", Long.parseLong(claims.getSubject()));
+            httpRequest.setAttribute("id", Integer.parseInt(claims.getSubject()));
             httpRequest.setAttribute("email", claims.get("email"));
 
 

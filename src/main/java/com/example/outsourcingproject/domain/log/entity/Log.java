@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,11 +20,9 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private int id;
 
-    @Column(nullable = false)
     private int targetId;
 
     @Column(nullable = false)
-//    @JoinColumn(name="user_id")
     private int userId;
 
     @Column(nullable = false)
@@ -38,5 +36,14 @@ public class Log {
     private String ipAddress;
 
     @CreatedDate
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+
+    public Log(int targetId, int userId, LogType type, String method, String url, String ipAddress) {
+        this.targetId = targetId;
+        this.userId = userId;
+        this.type = type;
+        this.method = method;
+        this.url = url;
+        this.ipAddress = ipAddress;
+    }
 }

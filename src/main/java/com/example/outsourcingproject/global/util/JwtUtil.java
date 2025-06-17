@@ -23,7 +23,8 @@ public class JwtUtil {
     // JWT 서명 알고리즘
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     // 애플리케이션 설정 파일에서 주입받은 비밀 키
-    @Value("${jwt.secret.key}")
+//    @Value("${jwt.secret.key}")
+    @Value("${jwt.secret.key:SUpZQkM1NjhBTkd2UXhaaVZ2eGpPRnpoQ2w1MkJTVG5EZlJLaU4=}")
     private String secretKey;
     // 실제 서명에 사용되는 키 객체
     private Key key;
