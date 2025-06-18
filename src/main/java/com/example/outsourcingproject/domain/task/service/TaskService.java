@@ -7,10 +7,12 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.PagingResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskListResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
+import com.example.outsourcingproject.domain.task.dto.response.TaskStatusResponse;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.user.dto.AssigneeResponse;
+import com.example.outsourcingproject.domain.user.dto.SimpleAssigneeResponse;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.exception.CustomException;
@@ -77,7 +79,7 @@ public class TaskService {
 
     // 태스크 상태 수정
     @Transactional
-    public TaskResponse modifyTaskStatus(TaskStatusUpdateRequest statusUpdateRequest, Long taskId, Long userId) {
+    public TaskStatusResponse modifyTaskStatus(TaskStatusUpdateRequest statusUpdateRequest, Long taskId, Long userId) {
 
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
 
@@ -91,7 +93,7 @@ public class TaskService {
             foundTask.setStartAt(LocalDateTime.now());
         }
 
-        return convertToResponse(foundTask);
+        return convertToStatusResponse(foundTask);
     }
 
     @Transactional
@@ -141,6 +143,21 @@ public class TaskService {
                 .status(task.getStatus())
                 .assigneeId((long) task.getAssignee().getId())
                 .assignee(AssigneeResponse.from(task.getAssignee()))
+                .createdAt(task.getCreatedAt())
+                .updatedAt(task.getModifiedAt())
+                .build();
+    }
+
+    public TaskStatusResponse convertToStatusResponse(Task task) {
+        return TaskStatusResponse.builder()
+                .id(task.getId())
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .priority(task.getPriority())
+                .dueDate(task.getDueDate())
+                .status(task.getStatus())
+                .assigneeId((long) task.getAssignee().getId())
+                .assignee(SimpleAssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getModifiedAt())
                 .build();
