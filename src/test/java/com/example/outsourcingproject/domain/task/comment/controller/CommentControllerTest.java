@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +39,7 @@ public class CommentControllerTest {
     @Test
     public void createCommentTest() throws Exception{
 
-        // given - 요청 dto, 응답 dto, PathVariable, data 객체
+        // given - 요청 dto, 응답 dto, PathVariable, data 객체 , service 행위
         CommentRequestDto request = new CommentRequestDto("댓글 내용");
 
         Long taskId = 1L;
@@ -61,6 +62,29 @@ public class CommentControllerTest {
 
     }
 
+    @Test
+    public void changeCommentTest() throws Exception {
+
+        // given - PathVariable, 요청 dto, 응답 dto, Service 행위
+        Long taskId = 1L;
+        Long commentId = 1L;
+
+        CommentRequestDto request = new CommentRequestDto("수정된 내용");
+
+        ApiResponse<CommentResponseData> response = ApiResponse.createSuccess("수정된 내용", null);
+
+        when(commentService.updateComment(taskId, commentId, request.getContents()))
+                .thenReturn(response);
+
+        // when
+        ResultActions result = mockMvc.perform(patch("/api/tasks/" + taskId + "/comments/" + commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        // then - HttpStatus 검증으로 확인
+        result.andExpect(status().isOk());
+
+    }
 
 
 }
