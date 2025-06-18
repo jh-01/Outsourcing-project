@@ -22,7 +22,7 @@ public class TaskRequest {
     private Priority priority;
 
     @NotNull(message = "담당자는 필수 항목입니다.")
-    private Long managerId;
-    private LocalDateTime deadline;
+    private Long assigneeId;
+    private LocalDateTime dueDate;
 
 }
