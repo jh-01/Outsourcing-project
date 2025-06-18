@@ -25,7 +25,7 @@ public class DashboardService {
 
         TaskOutline taskOutline = taskService.findDashboard();
         TaskReadRequest taskReadRequest = new TaskReadRequest(userId);
-        List<TaskResponse> userTasks = taskService.findTasks(taskReadRequest);
+        List<TaskResponse> userTasks = taskService.findTasksByUserId(userId);
         return new DashboardResponse(taskOutline, userTasks);
     }
 }

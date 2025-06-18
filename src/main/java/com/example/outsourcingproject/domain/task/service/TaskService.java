@@ -4,6 +4,8 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskRequest;
 import com.example.outsourcingproject.domain.task.dto.request.TaskStatusUpdateRequest;
 import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
+import com.example.outsourcingproject.domain.task.dto.response.PagingResponse;
+import com.example.outsourcingproject.domain.task.dto.response.TaskListResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.task.entity.Task;
@@ -13,6 +15,7 @@ import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,8 +157,17 @@ public class TaskService {
                 || (task.getManager().getId() == userId);
     }
 
-    public List<TaskResponse> findTasks(TaskReadRequest request) {
-        return taskRepository.findTasks(request);
+    public TaskListResponse findTasks(TaskReadRequest request) {
+        Page<TaskResponse> taskResponsePage = taskRepository.findTasks(request);
+        return TaskListResponse.builder()
+                .content(taskResponsePage.getContent())
+                .paging(PagingResponse.builder()
+                        .totalElements(taskResponsePage.getTotalElements())
+                        .totalPages(taskResponsePage.getTotalPages())
+                        .size(taskResponsePage.getSize())
+                        .number(taskResponsePage.getNumber())
+                        .build())
+                .build();
     }
 
     public TaskResponse findTask(Long id) {
@@ -167,7 +179,7 @@ public class TaskService {
     }
 
     public List<TaskResponse> findTasksByUserId(Long userId) {
-        List<TaskResponse> taskList = taskRepository.findTasks(new TaskReadRequest(userId));
+        List<TaskResponse> taskList = taskRepository.findTasksByUserId(userId);
         if (taskList.isEmpty()) {
             throw new CustomException(ErrorType.TASK_NOT_FOUND);
         }

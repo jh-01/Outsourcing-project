@@ -6,11 +6,12 @@ import com.example.outsourcingproject.domain.task.dto.response.QTaskResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.QTask;
 import com.example.outsourcingproject.domain.task.entity.Status;
-import com.example.outsourcingproject.domain.user.entity.QUser;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -50,11 +51,11 @@ public class QTaskRepositoryImpl implements QTaskRepository {
     }
 
     @Override
-    public List<TaskResponse> findTasks(TaskReadRequest request){
+    public Page<TaskResponse> findTasks(TaskReadRequest request){
         QTask task = QTask.task;
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
-        return queryFactory.select(
+        List<TaskResponse> taskResponseList = queryFactory.select(
             new QTaskResponse(
                     task.id,
                     task.manager.name,
@@ -80,6 +81,21 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory
+                .select(task.count())
+                .from(task)
+                .where(
+                        isTitleContains(request.getTitle()),
+                        isDescriptionContains(request.getDescription()),
+                        isStatusEquals(request.getStatus()),
+                        isManagerContains(request.getManagerId()),
+                        task.isDeleted.isFalse()
+                )
+                .fetchOne();
+
+        return new PageImpl<>(taskResponseList, pageable, total);
+
     }
 
     private BooleanExpression isTitleContains(String title){
@@ -96,6 +112,31 @@ public class QTaskRepositoryImpl implements QTaskRepository {
 
     private BooleanExpression isManagerContains(Long managerId){
         return managerId != null ? task.manager.id.eq(managerId.intValue()) : null;
+    }
+
+    @Override
+    public List<TaskResponse> findTasksByUserId(Long userId){
+        return queryFactory.select(
+                        new QTaskResponse(
+                                task.id,
+                                task.manager.name,
+                                task.generator.name,
+                                task.title,
+                                task.description,
+                                task.priority,
+                                task.deadline,
+                                task.status,
+                                task.startAt,
+                                task.CreatedAt,
+                                task.ModifiedAt
+                        )).from(task)
+                .leftJoin(task.manager)
+                .leftJoin(task.generator)
+                .where(
+                        task.manager.id.eq(Math.toIntExact(userId)),
+                        task.isDeleted.isFalse()
+                )
+                .fetch();
     }
 
 

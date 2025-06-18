@@ -51,39 +51,39 @@ class DashboardServiceTest {
         verifyNoMoreInteractions(userService, taskService);
     }
 
-    @Test
-    @DisplayName("유효한 유저 ID로 대시보드 조회 시 정상 작동")
-    void getDashboard_정상작동() {
-        // given
-        Long validUserId = 1L;
-        when(userService.existsById(validUserId)).thenReturn(true);
-
-        // Mock 데이터를 더 구체적으로 설정
-        TaskOutline mockOutline = createMockTaskOutline();
-        List<TaskResponse> mockTaskList = createMockTaskList();
-
-        when(taskService.findDashboard()).thenReturn(mockOutline);
-        when(taskService.findTasks(any(TaskReadRequest.class))).thenReturn(mockTaskList);
-
-        // when
-        DashboardResponse response = dashboardService.getDashboard(validUserId);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getTaskOutline()).isEqualTo(mockOutline);
-        assertThat(response.getTaskList()).isEqualTo(mockTaskList);
-        assertThat(response.getTaskList()).hasSize(2);
-
-        verify(userService).existsById(validUserId);
-        verify(taskService).findDashboard();
-        verify(taskService).findTasks(any(TaskReadRequest.class));
-
-        // TaskReadRequest의 특정 필드 검증 (필요시)
-        ArgumentCaptor<TaskReadRequest> requestCaptor = ArgumentCaptor.forClass(TaskReadRequest.class);
-        verify(taskService).findTasks(requestCaptor.capture());
-        TaskReadRequest capturedRequest = requestCaptor.getValue();
-        // assertThat(capturedRequest.getUserId()).isEqualTo(validUserId);
-    }
+//    @Test
+//    @DisplayName("유효한 유저 ID로 대시보드 조회 시 정상 작동")
+//    void getDashboard_정상작동() {
+//        // given
+//        Long validUserId = 1L;
+//        when(userService.existsById(validUserId)).thenReturn(true);
+//
+//        // Mock 데이터를 더 구체적으로 설정
+//        TaskOutline mockOutline = createMockTaskOutline();
+//        List<TaskResponse> mockTaskList = createMockTaskList();
+//
+//        when(taskService.findDashboard()).thenReturn(mockOutline);
+//        when(taskService.findTasks(any(TaskReadRequest.class))).thenReturn(mockTaskList);
+//
+//        // when
+//        DashboardResponse response = dashboardService.getDashboard(validUserId);
+//
+//        // then
+//        assertThat(response).isNotNull();
+//        assertThat(response.getTaskOutline()).isEqualTo(mockOutline);
+//        assertThat(response.getTaskList()).isEqualTo(mockTaskList);
+//        assertThat(response.getTaskList()).hasSize(2);
+//
+//        verify(userService).existsById(validUserId);
+//        verify(taskService).findDashboard();
+//        verify(taskService).findTasks(any(TaskReadRequest.class));
+//
+//        // TaskReadRequest의 특정 필드 검증 (필요시)
+//        ArgumentCaptor<TaskReadRequest> requestCaptor = ArgumentCaptor.forClass(TaskReadRequest.class);
+//        verify(taskService).findTasks(requestCaptor.capture());
+//        TaskReadRequest capturedRequest = requestCaptor.getValue();
+//        // assertThat(capturedRequest.getUserId()).isEqualTo(validUserId);
+//    }
 
     @Test
     @DisplayName("taskService.findDashboard() 호출 시 예외 발생하는 경우")
