@@ -37,6 +37,7 @@ public class CommentServiceTest {
     @Mock
     TaskRepository taskRepository;
 
+
     @Test
     public void addCommentTest() {
 
@@ -71,4 +72,24 @@ public class CommentServiceTest {
 
     }
 
+
+    @Test
+    public void updateCommentTest() {
+
+        // given
+        Comment comment = new Comment();
+        comment.setContents("수정전 내용");
+        comment.setUser(new User());
+
+        when(commentRepository.findByIdAndTaskId(1L, 1L)).thenReturn(Optional.of(comment));
+
+        // when
+        ApiResponse<?> updated = commentService.updateComment(1L, 1L, "수정후 내용");
+
+        //then
+        CommentResponseData data = (CommentResponseData) updated.getData();
+
+        assertThat(data.getContents()).isEqualTo("수정후 내용");
+
+    }
 }
