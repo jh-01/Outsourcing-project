@@ -61,6 +61,14 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+
+    // 추가된 부분
+    jvmArgs "-Xshare:off"
 }
