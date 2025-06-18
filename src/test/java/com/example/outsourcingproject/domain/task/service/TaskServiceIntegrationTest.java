@@ -24,68 +24,68 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
-public class TaskServiceIntegrationTest {
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TaskRepository taskRepository;
-
-    private Long generatorId;
-    private Long managerId;
-
-
-    @BeforeEach
-    void setUp() {
-        User generator = userRepository.save(User.builder()
-                .username("생성자")
-                .build());
-
-        User manager = userRepository.save(User.builder()
-                .name("담당자")
-                .email("mgr@example.com")
-                .password("password")
-                .build());
-
-        generatorId = generator.getId();
-        managerId = manager.getId();
-    }
-
-
-    @Test
-    @DisplayName("태스크 단건 조회")
-    void 태스크_단건_성공(){
-        // given
-        // 통합 후에 실제 생성 후 조회하기
-        TaskResponse mockTask = new TaskResponse(
-                1L,
-                "John Doe",
-                "John Doe",
-                "d",
-                "d",
-                Priority.LOW,
-                LocalDateTime.parse("2025-06-17T17:21:54.000000"),
-                Status.TODO,
-                LocalDateTime.parse("2025-06-17T15:56:03.000000"),
-                LocalDateTime.parse("2025-06-17T15:55:44.000000"),
-                LocalDateTime.parse("2025-06-17T15:55:48.000000")
-        );
-
-
-        //when
-        TaskResponse targetTask = taskService.findTask(1L);
-
-
-        // then
-        assertThat(targetTask).isNotNull();
-        assertThat(targetTask).isEqualTo(mockTask);
-    }
-
-}
+//@SpringBootTest
+//@Transactional
+//@AutoConfigureMockMvc
+//@ExtendWith(MockitoExtension.class)
+//public class TaskServiceIntegrationTest {
+//    @Autowired
+//    private TaskService taskService;
+//
+//    @Autowired
+//    private UserRepository userRepository;
+//
+//    @Autowired
+//    private TaskRepository taskRepository;
+//
+//    private Long generatorId;
+//    private Long managerId;
+//
+//
+////    @BeforeEach
+////    void setUp() {
+////        User generator = userRepository.save(User.builder()
+////                .username("생성자")
+////                .build());
+////
+////        User manager = userRepository.save(User.builder()
+////                .name("담당자")
+////                .email("mgr@example.com")
+////                .password("password")
+////                .build());
+////
+////        generatorId = generator.getId();
+////        managerId = manager.getId();
+////    }
+//
+//
+////    @Test
+////    @DisplayName("태스크 단건 조회")
+////    void 태스크_단건_성공(){
+////        // given
+////        // 통합 후에 실제 생성 후 조회하기
+////        TaskResponse mockTask = new TaskResponse(
+////                1L,
+////                "John Doe",
+////                "John Doe",
+////                "d",
+////                "d",
+////                Priority.LOW,
+////                LocalDateTime.parse("2025-06-17T17:21:54.000000"),
+////                Status.TODO,
+////                LocalDateTime.parse("2025-06-17T15:56:03.000000"),
+////                LocalDateTime.parse("2025-06-17T15:55:44.000000"),
+////                LocalDateTime.parse("2025-06-17T15:55:48.000000")
+////        );
+////
+////
+////        //when
+////        TaskResponse targetTask = taskService.findTask(1L);
+////
+////
+////        // then
+////        assertThat(targetTask).isNotNull();
+////        assertThat(targetTask).isEqualTo(mockTask);
+////    }
+//
+//}

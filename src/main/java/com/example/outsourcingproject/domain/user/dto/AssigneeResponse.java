@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.user.dto;
 
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class AssigneeResponse {
     private String name;
     private String email;
 
+    @QueryProjection
     public AssigneeResponse(Long id, String username, String name, String email) {
         this.id = id;
         this.username = username;

@@ -1,11 +1,14 @@
 package com.example.outsourcingproject.domain.task.repository;
-
 import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
 import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.QTaskResponse;
+import static com.example.outsourcingproject.domain.task.entity.QTask.task;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.QTask;
 import com.example.outsourcingproject.domain.task.entity.Status;
+import com.example.outsourcingproject.domain.user.dto.QAssigneeResponse;
+import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,15 +19,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.example.outsourcingproject.domain.task.entity.QTask.task;
 
 @Repository
 @RequiredArgsConstructor
 public class QTaskRepositoryImpl implements QTaskRepository {
     private final JPAQueryFactory queryFactory;
+    private final UserRepository userRepository;
 
     @Override
     public TaskResponse findTaskById(Long id){
@@ -32,19 +35,18 @@ public class QTaskRepositoryImpl implements QTaskRepository {
         return queryFactory.select(
                 new QTaskResponse(
                         task.id,
-                        task.manager.name,
-                        task.generator.name,
                         task.title,
                         task.description,
+                        task.dueDate,
                         task.priority,
-                        task.deadline,
                         task.status,
-                        task.startAt,
+                        task.assignee.id.longValue(),
+                        new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
                         task.CreatedAt,
                         task.ModifiedAt
                 )
         ).from(task)
-                .leftJoin(task.manager)
+                .leftJoin(task.assignee)
                 .leftJoin(task.generator)
                 .where(task.id.eq(id), task.isDeleted.isFalse())
                 .fetchOne();
@@ -58,24 +60,23 @@ public class QTaskRepositoryImpl implements QTaskRepository {
         List<TaskResponse> taskResponseList = queryFactory.select(
             new QTaskResponse(
                     task.id,
-                    task.manager.name,
-                    task.generator.name,
                     task.title,
                     task.description,
+                    task.dueDate,
                     task.priority,
-                    task.deadline,
                     task.status,
-                    task.startAt,
+                    task.assignee.id.longValue(),
+                    new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
                     task.CreatedAt,
                     task.ModifiedAt
             )).from(task)
-                .leftJoin(task.manager)
+                .leftJoin(task.assignee)
                 .leftJoin(task.generator)
                 .where(
                         isTitleContains(request.getTitle()),
                         isDescriptionContains(request.getDescription()),
                         isStatusEquals(request.getStatus()),
-                        isManagerContains(request.getManagerId()),
+                        isAssigneeContains(request.getAssigneeId()),
                         task.isDeleted.isFalse()
                 )
                 .offset(pageable.getOffset())
@@ -89,13 +90,12 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                         isTitleContains(request.getTitle()),
                         isDescriptionContains(request.getDescription()),
                         isStatusEquals(request.getStatus()),
-                        isManagerContains(request.getManagerId()),
+                        isAssigneeContains(request.getAssigneeId()),
                         task.isDeleted.isFalse()
                 )
                 .fetchOne();
 
         return new PageImpl<>(taskResponseList, pageable, total);
-
     }
 
     private BooleanExpression isTitleContains(String title){
@@ -103,15 +103,15 @@ public class QTaskRepositoryImpl implements QTaskRepository {
     }
 
     private BooleanExpression isDescriptionContains(String description){
-        return StringUtils.hasText(description) ? task.description.containsIgnoreCase(description) : null;
+         return StringUtils.hasText(description) ? task.description.containsIgnoreCase(description) : null;
     }
 
     private BooleanExpression isStatusEquals(Status status){
         return status != null ? task.status.eq(status) : null;
     }
 
-    private BooleanExpression isManagerContains(Long managerId){
-        return managerId != null ? task.manager.id.eq(managerId.intValue()) : null;
+    private BooleanExpression isAssigneeContains(Long managerId){
+        return managerId != null ? task.assignee.id.eq(managerId.intValue()) : null;
     }
 
     @Override
@@ -119,21 +119,20 @@ public class QTaskRepositoryImpl implements QTaskRepository {
         return queryFactory.select(
                         new QTaskResponse(
                                 task.id,
-                                task.manager.name,
-                                task.generator.name,
                                 task.title,
                                 task.description,
+                                task.dueDate,
                                 task.priority,
-                                task.deadline,
                                 task.status,
-                                task.startAt,
+                                task.assignee.id.longValue(),
+                                new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
                                 task.CreatedAt,
                                 task.ModifiedAt
                         )).from(task)
-                .leftJoin(task.manager)
+                .leftJoin(task.assignee)
                 .leftJoin(task.generator)
                 .where(
-                        task.manager.id.eq(Math.toIntExact(userId)),
+                        task.assignee.id.eq(Math.toIntExact(userId)),
                         task.isDeleted.isFalse()
                 )
                 .fetch();
@@ -187,7 +186,7 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                 .where(
                         task.isDeleted.isFalse(),
                         task.status.eq(Status.IN_PROGRESS).or(task.status.eq(Status.TODO)),
-                        task.deadline.before(now)
+                        task.dueDate.before(now)
                 )
                 .fetchOne();
 
@@ -200,5 +199,4 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                 overDueDateCount
         );
     }
-
 }
