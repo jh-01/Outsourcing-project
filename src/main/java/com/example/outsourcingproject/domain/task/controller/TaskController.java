@@ -3,6 +3,7 @@ package com.example.outsourcingproject.domain.task.controller;
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.request.TaskRequest;
 import com.example.outsourcingproject.domain.task.dto.request.TaskStatusUpdateRequest;
+import com.example.outsourcingproject.domain.task.dto.response.TaskListResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.service.TaskService;
 import com.example.outsourcingproject.global.common.ApiResponse;
@@ -80,7 +81,7 @@ public class TaskController {
     public ApiResponse<?> getTaskList(
             @ModelAttribute TaskReadRequest taskReadRequest
             ){
-        List<TaskResponse> taskList = taskService.findTasks(taskReadRequest);
+        TaskListResponse taskList = taskService.findTasks(taskReadRequest);
         return ApiResponse.createSuccess("조회 성공", taskList);
     }
 

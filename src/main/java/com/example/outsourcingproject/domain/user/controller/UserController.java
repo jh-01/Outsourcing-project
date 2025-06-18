@@ -11,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -28,6 +30,12 @@ public class UserController {
     @GetMapping("/users/me")
     public ApiResponse<UserResponseDto> userInfo(@AuthenticationPrincipal User user){
         return userService.userInfo(user.getUsername());
+    }
+
+    // 현재 유저 정보 조회
+    @GetMapping("/users")
+    public ApiResponse<List<UserResponseDto>> getUsers(@RequestHeader("Authorization") String authorizationHeader){
+        return userService.getUsers();
     }
 
     // 유저 비밀번호 수정

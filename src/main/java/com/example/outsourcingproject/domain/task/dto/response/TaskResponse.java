@@ -2,8 +2,10 @@ package com.example.outsourcingproject.domain.task.dto.response;
 
 import com.example.outsourcingproject.domain.task.entity.Priority;
 import com.example.outsourcingproject.domain.task.entity.Status;
+import com.example.outsourcingproject.domain.user.dto.AssigneeResponse;
 import com.example.outsourcingproject.global.log.LoggableResponse;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,30 +18,30 @@ import java.time.LocalDateTime;
 public class TaskResponse implements LoggableResponse {
     // id 추가됨
     private Long id;
-    private String managerName;
-    private String generatorName;
     private String title;
     private String description;
+    private LocalDateTime dueDate;
     private Priority priority;
-    private LocalDateTime deadline;
     private Status status;
-    private LocalDateTime startAt;
+    private Long assigneeId;
+    private AssigneeResponse assignee;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     @QueryProjection
-    public TaskResponse(Long id, String managerName, String generatorName, String title, String description, Priority priority, LocalDateTime deadline, Status status, LocalDateTime startAt, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public TaskResponse(Long id, String title, String description, LocalDateTime dueDate,
+                        Priority priority, Status status, Long assigneeId, AssigneeResponse assignee,
+                        LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.managerName = managerName;
-        this.generatorName = generatorName;
         this.title = title;
         this.description = description;
+        this.dueDate = dueDate;
         this.priority = priority;
-        this.deadline = deadline;
         this.status = status;
-        this.startAt = startAt;
+        this.assigneeId = assigneeId;
+        this.assignee = assignee;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.updatedAt = updatedAt;
     }
 
     @Override

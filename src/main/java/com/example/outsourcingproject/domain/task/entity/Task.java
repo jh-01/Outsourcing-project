@@ -21,8 +21,8 @@ public class Task extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = false)
-    private User manager;
+    @JoinColumn(name = "assignee_id", nullable = false)
+    private User assignee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "generator_id", nullable = false)
@@ -36,7 +36,7 @@ public class Task extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    private LocalDateTime deadline;
+    private LocalDateTime dueDate;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

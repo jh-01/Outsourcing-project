@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -52,6 +53,16 @@ public class User {
 
     public User() {
 
+    }
+
+    @Builder
+    public User(String username, String email, String password, String name, UserRole role, LocalDateTime createdAt) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.role = role;
+        this.createdAt = createdAt;
     }
 
     public void updatePassword(String password) {
