@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.domain.task.comment.service;
 
+import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
@@ -7,6 +8,7 @@ import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
 import org.assertj.core.api.Assertions;
@@ -58,12 +60,14 @@ public class CommentServiceTest {
                     return comment; });
 
         // when
-        CommentResponseDto saved = commentService.addComment(1L, "댓글 내용");
+        ApiResponse<?> saved = commentService.addComment(1L, "댓글 내용");
 
         // then
-        assertThat(saved.getData().getContents()).isEqualTo("댓글 내용");
-        assertThat(saved.getData().getTask_id()).isEqualTo(1);
-        assertThat(saved.getData().getUserName()).isEqualTo("이름");
+        CommentResponseData data = (CommentResponseData) saved.getData();
+
+        assertThat(data.getContents()).isEqualTo("댓글 내용");
+        assertThat(data.getTask_id()).isEqualTo(1);
+        assertThat(data.getUserName()).isEqualTo("이름");
 
     }
 
