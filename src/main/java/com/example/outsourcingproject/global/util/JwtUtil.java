@@ -37,7 +37,11 @@ public class JwtUtil {
      */
     @PostConstruct
     public void init() {
+        log.info("🔐 Raw secretKey string = {}", secretKey);
+
         byte[] bytes = Base64.getDecoder().decode(secretKey);
+        log.info("🔐 Decoded key byte length = {}", bytes.length);  // ✅ 32 이상이어야 함
+
         key = Keys.hmacShaKeyFor(bytes);
     }
 
@@ -51,15 +55,17 @@ public class JwtUtil {
      */
     public String createToken(int id, String username, UserRole role) {
         Date date = new Date();
-
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim("username", username)
                 .claim("role", role.name())
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                .setIssuedAt(date) // 발급일
-                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .setIssuedAt(date)
+                .signWith(key, signatureAlgorithm)
                 .compact();
+
+        log.info("✅ Created JWT Token = {}", token);  // 이거 찍어보세요
+        return token;
     }
 
     /**

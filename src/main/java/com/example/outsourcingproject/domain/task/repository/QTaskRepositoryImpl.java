@@ -27,8 +27,6 @@ public class QTaskRepositoryImpl implements QTaskRepository {
 
     @Override
     public TaskResponse findTaskById(Long id){
-        QUser manager = new QUser("manager");
-        QUser generator = new QUser("generator");
 
         return queryFactory.select(
                 new QTaskResponse(
@@ -41,12 +39,12 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                         task.deadline,
                         task.status,
                         task.startAt,
-                        task.createdAt,
-                        task.modifiedAt
+                        task.CreatedAt,
+                        task.ModifiedAt
                 )
         ).from(task)
-                .leftJoin(task.manager, manager).fetchJoin()
-                .leftJoin(task.generator, generator).fetchJoin()
+                .leftJoin(task.manager)
+                .leftJoin(task.generator)
                 .where(task.id.eq(id), task.isDeleted.isFalse())
                 .fetchOne();
     }
@@ -54,9 +52,6 @@ public class QTaskRepositoryImpl implements QTaskRepository {
     @Override
     public List<TaskResponse> findTasks(TaskReadRequest request){
         QTask task = QTask.task;
-        QUser manager = new QUser("manager");
-        QUser generator = new QUser("generator");
-
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
         return queryFactory.select(
@@ -70,18 +65,18 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                     task.deadline,
                     task.status,
                     task.startAt,
-                    task.createdAt,
-                    task.modifiedAt
+                    task.CreatedAt,
+                    task.ModifiedAt
             )).from(task)
+                .leftJoin(task.manager)
+                .leftJoin(task.generator)
                 .where(
                         isTitleContains(request.getTitle()),
                         isDescriptionContains(request.getDescription()),
-                        isStatusContains(request.getStatus()),
+                        isStatusEquals(request.getStatus()),
                         isManagerContains(request.getManagerId()),
                         task.isDeleted.isFalse()
                 )
-                .leftJoin(task.manager, manager).fetchJoin()
-                .leftJoin(task.generator, generator).fetchJoin()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -95,13 +90,14 @@ public class QTaskRepositoryImpl implements QTaskRepository {
         return StringUtils.hasText(description) ? task.description.containsIgnoreCase(description) : null;
     }
 
-    private BooleanExpression isStatusContains(Status status){
-        return status == null ? task.status.stringValue().containsIgnoreCase(status.toString()): null;
+    private BooleanExpression isStatusEquals(Status status){
+        return status != null ? task.status.eq(status) : null;
     }
 
-    private BooleanExpression isManagerContains(long managerId){
-        return task.manager.id.eq((int) managerId);
+    private BooleanExpression isManagerContains(Long managerId){
+        return managerId != null ? task.manager.id.eq(managerId.intValue()) : null;
     }
+
 
     @Override
     public TaskOutline findDashboard() {
