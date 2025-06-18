@@ -8,6 +8,7 @@ import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
+import com.example.outsourcingproject.domain.user.dto.AssigneeResponse;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.exception.CustomException;
@@ -29,21 +30,21 @@ public class TaskService {
     // 태스크 생성
     public TaskResponse createTask(TaskRequest taskRequest, Long userId) {
 
-        LocalDateTime deadline = validateDeadline(taskRequest.getDeadline());
+        LocalDateTime deadline = validateDeadline(taskRequest.getDueDate());
 
         User foundUser = userRepository
                 .findById(userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
         User foundManager = userRepository
-                .findById(taskRequest.getManagerId())
+                .findById(taskRequest.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         Task task = Task.builder()
                 .title(taskRequest.getTitle())
                 .description(taskRequest.getDescription())
-                .manager(foundManager)
+                .assignee(foundManager)
                 .generator(foundUser)
                 .priority(taskRequest.getPriority())
-                .deadline(deadline)
+                .dueDate(deadline)
                 .build();
 
         Task savedTask = taskRepository.save(task);
@@ -55,18 +56,18 @@ public class TaskService {
     @Transactional
     public TaskResponse modifyTask(TaskRequest taskRequest, Long taskId, Long userId) {
         Task foundTask = taskRepository.findByIdOrElseThrow(taskId);
-        User foundManager = userRepository.findById(taskRequest.getManagerId())
+        User foundManager = userRepository.findById(taskRequest.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         validateTaskAccessPermission(foundTask, userId);
 
-        LocalDateTime deadline = validateDeadline(taskRequest.getDeadline());
+        LocalDateTime deadline = validateDeadline(taskRequest.getDueDate());
 
         foundTask.setTitle(taskRequest.getTitle());
         foundTask.setDescription(taskRequest.getDescription());
         foundTask.setPriority(taskRequest.getPriority());
-        foundTask.setManager(foundManager);
-        foundTask.setDeadline(deadline);
+        foundTask.setAssignee(foundManager);
+        foundTask.setDueDate(deadline);
 
         return convertToResponse(foundTask);
     }
@@ -132,14 +133,13 @@ public class TaskService {
                 .id(task.getId())
                 .title(task.getTitle())
                 .description(task.getDescription())
-                .managerName(task.getManager().getName())
-                .generatorName(task.getGenerator().getName())
                 .priority(task.getPriority())
-                .deadline(task.getDeadline())
+                .dueDate(task.getDueDate())
                 .status(task.getStatus())
-                .startAt(task.getStartAt())
+                .assigneeId((long) task.getAssignee().getId())
+                .assignee(AssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
-                .modifiedAt(task.getModifiedAt())
+                .updatedAt(task.getModifiedAt())
                 .build();
     }
 
@@ -151,7 +151,7 @@ public class TaskService {
 
     public boolean isTaskAccessible(Task task, Long userId) {
         return (task.getGenerator().getId() == userId)
-                || (task.getManager().getId() == userId);
+                || (task.getAssignee().getId() == userId);
     }
 
     public List<TaskResponse> findTasks(TaskReadRequest request) {
