@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.global.util;
 
+import com.example.outsourcingproject.domain.user.entity.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -43,20 +44,40 @@ public class JwtUtil {
 
     /**
      * JWT 토큰을 생성합니다.
-     * @param id 사용자 아이디
-     * @param email 사용자 이메일
+     * @param id 사용자 고유 아이디
+     * @param username 사용자 아이디
+     * @param role 사용자 권한
      * @return 생성된 JWT 토큰
      */
-    public String createToken(int id, String email) {
+    public String createToken(int id, String username, UserRole role) {
         Date date = new Date();
 
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
-                .claim("email", email)
+                .claim("username", username)
+                .claim("role", role.name())
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                 .setIssuedAt(date) // 발급일
                 .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                 .compact();
+    }
+
+    /**
+     * JWT 토큰에서 역할(권한) 정보를 추출합니다.
+     * @param token JWT 토큰
+     * @return 역할 정보 (문자열)
+     */
+    public String extractRoles(String token) {
+        return extractClaims(token).get("role", String.class);
+    }
+
+    public String extractUsername(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("username", String.class);
     }
 
     // "Bearer " 접두사가 붙은 토큰 문자열에서 접두사 제거하고 순수 JWT 토큰 반환
