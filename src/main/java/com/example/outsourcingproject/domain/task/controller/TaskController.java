@@ -5,6 +5,7 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskRequest;
 import com.example.outsourcingproject.domain.task.dto.request.TaskStatusUpdateRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskListResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
+import com.example.outsourcingproject.domain.task.dto.response.TaskStatusResponse;
 import com.example.outsourcingproject.domain.task.service.TaskService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.log.annotation.LogWrite;
@@ -14,7 +15,6 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -52,13 +52,13 @@ public class TaskController {
     // 태스크 상태 변경
     @LogWrite(type = LogType.TASK_STATUS_CHANGED)
     @PatchMapping("/{taskId}/status")
-    public ApiResponse<TaskResponse> updateTaskStatus(
+    public ApiResponse<TaskStatusResponse> updateTaskStatus(
             HttpServletRequest request,
             @Valid @RequestBody TaskStatusUpdateRequest statusUpdateRequest,
             @PathVariable Long taskId
     ) {
         Long userId = Long.valueOf(request.getAttribute("id").toString());
-        TaskResponse taskResponse = taskService.modifyTaskStatus(statusUpdateRequest, taskId, userId);
+        TaskStatusResponse taskResponse = taskService.modifyTaskStatus(statusUpdateRequest, taskId, userId);
 
         return ApiResponse.createSuccess("태스크 상태가 성공적으로 수정되었습니다.", taskResponse);
     }
