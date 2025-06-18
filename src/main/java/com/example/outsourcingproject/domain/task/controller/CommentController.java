@@ -8,6 +8,7 @@ import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.log.annotation.LogWrite;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,15 +33,16 @@ public class CommentController {
     @LogWrite(type = LogType.COMMENT_CREATED)
     @PostMapping("/{task_id}/comments")
     public ResponseEntity<ApiResponse<CommentResponseData>> createComment(@PathVariable("task_id") Long taskId,
-                                                                          @Valid @RequestBody CommentRequestDto requestDto) {
+                                                                          @Valid @RequestBody CommentRequestDto requestDto,
+                                                                          HttpServletRequest servletRequest) {
 
-        System.out.println("🔥 CommentService injected in controller: " + commentService);
-        System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
-        System.out.println("commentRepository 가 null 인지 : " + commentService.getCommentRepository());
-        System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
-        System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
+//        System.out.println("🔥 CommentService injected in controller: " + commentService);
+//        System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
+//        System.out.println("commentRepository 가 null 인지 : " + commentService.getCommentRepository());
+//        System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
+//        System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
 
-        ApiResponse<CommentResponseData> responseDto =  commentService.addComment(taskId, requestDto.getContents());
+        ApiResponse<CommentResponseData> responseDto =  commentService.addComment(taskId, requestDto.getContents(), servletRequest);
 
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
 

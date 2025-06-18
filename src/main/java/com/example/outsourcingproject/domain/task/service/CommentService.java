@@ -6,10 +6,13 @@ import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
+import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     @PostConstruct
     public void init() {
@@ -44,18 +48,26 @@ public class CommentService {
     }
 
     // 댓글 생성 로직
-    public final ApiResponse<CommentResponseData> addComment(Long taskId, String contents) {
+    public final ApiResponse<CommentResponseData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
 
         System.out.println(" 댓글 생성 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 생성 api 의 commentRepository : " + commentRepository);
+        System.out.println("댓글 생성 api 의 userRepository : " + userRepository);
 
         Comment comment = new Comment(contents);
 
         // taskId 로 task 조회
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new CustomException(ErrorType.TASK_NOT_FOUND));
 
+        // 토큰에서 user_id 가져오기
+        Long userId = (Long) servletRequest.getAttribute("id");
+
+        // userId 로 user 조회
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+
         // 댓글 저장
         comment.setTask(task);
+        comment.setUser(user);
         commentRepository.save(comment);
 
 
