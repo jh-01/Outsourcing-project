@@ -32,9 +32,9 @@ public class UserController {
         return userService.userInfo(user.getUsername());
     }
 
-    // 현재 유저 정보 조회
+    // 유저 리스트 조회
     @GetMapping("/users")
-    public ApiResponse<List<UserResponseDto>> getUsers(@RequestHeader("Authorization") String authorizationHeader){
+    public ApiResponse<List<UserResponseDto>> getUsers(){
         return userService.getUsers();
     }
 
