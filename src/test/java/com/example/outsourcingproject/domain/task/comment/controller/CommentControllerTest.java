@@ -11,15 +11,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CommentController.class)
@@ -86,5 +89,26 @@ public class CommentControllerTest {
 
     }
 
+    @Test
+    public void getCommentsTest() throws Exception{
+
+        // given - PathVariable, Pageable 객체, 응답 dto
+        Long taskId = 1L;
+
+        Pageable pageable = PageRequest.of(0,10);
+
+        ApiResponse<List<CommentResponseData>> response = ApiResponse.createSuccess("조회 성공!", null);
+
+        when(commentService.getCommentList(taskId, pageable, null))
+                .thenReturn(response);
+
+        // when, then
+        mockMvc.perform(get("/api/tasks/" + taskId + "/comments")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+
+    }
 
 }
