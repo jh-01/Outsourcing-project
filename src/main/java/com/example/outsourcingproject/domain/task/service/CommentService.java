@@ -44,7 +44,7 @@ public class CommentService {
     }
 
     // 댓글 생성 로직
-    public final ApiResponse<?> addComment(Long taskId, String contents) {
+    public final ApiResponse<CommentResponseData> addComment(Long taskId, String contents) {
 
         System.out.println(" 댓글 생성 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 생성 api 의 commentRepository : " + commentRepository);
@@ -69,7 +69,7 @@ public class CommentService {
 
     // 댓글 수정 로직
     @Transactional
-    public ApiResponse<?> updateComment(Long taskId, Long commentId, String contents) {
+    public ApiResponse<CommentResponseData> updateComment(Long taskId, Long commentId, String contents) {
 
         System.out.println(" 댓글 수정 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
@@ -94,7 +94,7 @@ public class CommentService {
 
 
     // 댓글 조회 로직
-    public ApiResponse<?> getCommentList(Long taskId, Pageable pageable, String keyword) {
+    public ApiResponse<List<CommentResponseData>> getCommentList(Long taskId, Pageable pageable, String keyword) {
 
         // 댓글 리스트 조회
         Page<Comment> comments;
@@ -122,7 +122,7 @@ public class CommentService {
 
     // 댓글 삭제 로직 - 소프트 삭제
     @Transactional
-    public ApiResponse<?> softDeleteComment(Long taskId, Long commentId) {
+    public ApiResponse<CommentResponseData> softDeleteComment(Long taskId, Long commentId) {
 
         // 삭제할 댓글 조회
         Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));

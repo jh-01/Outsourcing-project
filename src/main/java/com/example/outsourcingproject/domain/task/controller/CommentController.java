@@ -2,6 +2,7 @@ package com.example.outsourcingproject.domain.task.controller;
 
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.CommentRequestDto;
+import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.service.CommentService;
@@ -30,8 +31,8 @@ public class CommentController {
     // 댓글 생성
     @LogWrite(type = LogType.COMMENT_CREATED)
     @PostMapping("/{task_id}/comments")
-    public ResponseEntity<ApiResponse<?>> createComment(@PathVariable("task_id") Long taskId,
-                                                     @Valid @RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<CommentResponseData>> createComment(@PathVariable("task_id") Long taskId,
+                                                                          @Valid @RequestBody CommentRequestDto requestDto) {
 
         System.out.println("🔥 CommentService injected in controller: " + commentService);
         System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
@@ -39,7 +40,7 @@ public class CommentController {
         System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
         System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
 
-        ApiResponse<?> responseDto =  commentService.addComment(taskId, requestDto.getContents());
+        ApiResponse<CommentResponseData> responseDto =  commentService.addComment(taskId, requestDto.getContents());
 
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
 
@@ -47,11 +48,11 @@ public class CommentController {
 
     // 댓글 수정
     @PatchMapping("/{task_id}/comments/{id}")
-    public ResponseEntity<ApiResponse<?>> changeComment(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<CommentResponseData>> changeComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId,
                                                             @Valid @RequestBody CommentRequestDto requestDto) {
 
-        ApiResponse<?> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents());
+        ApiResponse<CommentResponseData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents());
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
@@ -59,13 +60,13 @@ public class CommentController {
 
     // 댓글 조회
     @GetMapping("/{task_id}/comments")
-    public ResponseEntity<ApiResponse<?>> getComments(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<List<CommentResponseData>>> getComments(@PathVariable("task_id") Long taskId,
                                                                 // 페이지 기본값 설정
                                                                 @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                                                 Pageable pageable,
                                                                 @RequestParam(required = false) String keyword) {
 
-        ApiResponse<?> response = commentService.getCommentList(taskId, pageable, keyword);
+        ApiResponse<List<CommentResponseData>> response = commentService.getCommentList(taskId, pageable, keyword);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -73,10 +74,10 @@ public class CommentController {
 
     // 댓글 삭제
     @DeleteMapping("/{task_id}/comments/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteComment(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<CommentResponseData>> deleteComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId) {
 
-        ApiResponse<?> responseDto = commentService.softDeleteComment(taskId, commentId);
+        ApiResponse<CommentResponseData> responseDto = commentService.softDeleteComment(taskId, commentId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
