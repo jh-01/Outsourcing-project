@@ -57,12 +57,10 @@ dependencies {
     // security 의존성
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // Java 시간 타입(JSON 변환 지원)
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-    outputs.dir snippetsDir
-
-    // 추가된 부분
-    jvmArgs "-Xshare:off"
 }
