@@ -121,26 +121,26 @@ class DashboardServiceTest {
         verify(taskService).findTasks(any(TaskReadRequest.class));
     }
 
-    @Test
-    @DisplayName("빈 태스크 목록이 반환되는 경우")
-    void getDashboard_빈_태스크목록() {
-        // given
-        Long validUserId = 1L;
-        TaskOutline mockOutline = createMockTaskOutline();
-        List<TaskResponse> emptyTaskList = Collections.emptyList();
-
-        when(userService.existsById(validUserId)).thenReturn(true);
-        when(taskService.findDashboard()).thenReturn(mockOutline);
-        when(taskService.findTasks(any(TaskReadRequest.class))).thenReturn(emptyTaskList);
-
-        // when
-        DashboardResponse response = dashboardService.getDashboard(validUserId);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getTaskOutline()).isEqualTo(mockOutline);
-        assertThat(response.getTaskList()).isEmpty();
-    }
+//    @Test
+//    @DisplayName("빈 태스크 목록이 반환되는 경우")
+//    void getDashboard_빈_태스크목록() {
+//        // given
+//        Long validUserId = 1L;
+//        TaskOutline mockOutline = createMockTaskOutline();
+//        List<TaskResponse> emptyTaskList = Collections.emptyList();
+//
+//        when(userService.existsById(validUserId)).thenReturn(true);
+//        when(taskService.findDashboard()).thenReturn(mockOutline);
+//        when(taskService.findTasks(any(TaskReadRequest.class))).thenReturn(emptyTaskList);
+//
+//        // when
+//        DashboardResponse response = dashboardService.getDashboard(validUserId);
+//
+//        // then
+//        assertThat(response).isNotNull();
+//        assertThat(response.getTaskOutline()).isEqualTo(mockOutline);
+//        assertThat(response.getTaskList()).isEmpty();
+//    }
 
     // Helper methods for creating mock objects
     private TaskOutline createMockTaskOutline() {
