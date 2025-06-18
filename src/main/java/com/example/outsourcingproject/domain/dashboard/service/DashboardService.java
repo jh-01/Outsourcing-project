@@ -2,7 +2,6 @@ package com.example.outsourcingproject.domain.dashboard.service;
 
 import com.example.outsourcingproject.domain.dashboard.dto.DashboardResponse;
 import com.example.outsourcingproject.domain.dashboard.dto.TaskOutline;
-import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.service.TaskService;
 import com.example.outsourcingproject.domain.user.service.UserService;
@@ -24,8 +23,11 @@ public class DashboardService {
         if(!userService.existsById(userId)) throw new CustomException(ErrorType.USER_NOT_FOUND);
 
         TaskOutline taskOutline = taskService.findDashboard();
-        TaskReadRequest taskReadRequest = new TaskReadRequest(userId);
+        if(taskOutline == null) throw new CustomException(ErrorType.DASHBOARD_FETCH_ERROR);
+
         List<TaskResponse> userTasks = taskService.findTasksByUserId(userId);
+        if(userTasks == null) throw new CustomException(ErrorType.TASK_NOT_FOUND);
+
         return new DashboardResponse(taskOutline, userTasks);
     }
 }

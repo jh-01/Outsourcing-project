@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -29,6 +28,7 @@ public class TaskResponse implements LoggableResponse {
     private LocalDateTime updatedAt;
 
     @QueryProjection
+    @Builder
     public TaskResponse(Long id, String title, String description, LocalDateTime dueDate,
                         Priority priority, Status status, Long assigneeId, AssigneeResponse assignee,
                         LocalDateTime createdAt, LocalDateTime updatedAt) {

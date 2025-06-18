@@ -159,6 +159,10 @@ public class TaskService {
 
     public TaskListResponse findTasks(TaskReadRequest request) {
         Page<TaskResponse> taskResponsePage = taskRepository.findTasks(request);
+        if (taskResponsePage == null) {
+            throw new CustomException(ErrorType.TASK_FETCH_FAILED); // 새 에러타입 추가 추천
+        }
+
         return TaskListResponse.builder()
                 .content(taskResponsePage.getContent())
                 .paging(PagingResponse.builder()

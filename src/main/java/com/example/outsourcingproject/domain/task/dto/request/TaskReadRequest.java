@@ -1,11 +1,13 @@
 package com.example.outsourcingproject.domain.task.dto.request;
 
 import com.example.outsourcingproject.domain.task.entity.Status;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class TaskReadRequest {
     private int page = 0;
     private int size = 10;

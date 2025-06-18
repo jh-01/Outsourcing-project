@@ -14,7 +14,6 @@ import com.example.outsourcingproject.domain.task.dto.request.TaskReadRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")

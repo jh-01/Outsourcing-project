@@ -58,6 +58,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
 }
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -32,6 +32,10 @@ public enum ErrorType {
     TASK_ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 태스크입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
+    TASK_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "태스크 조회에 실패했습니다."),
+
+    // 대시보드 관련 에러
+    DASHBOARD_FETCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "대시보드 조회에 실패했습니다."),
 
     // 댓글 관련 에러
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
