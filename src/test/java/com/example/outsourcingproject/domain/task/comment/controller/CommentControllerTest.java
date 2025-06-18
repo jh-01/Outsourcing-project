@@ -7,6 +7,7 @@ import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.Servlet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +37,8 @@ public class CommentControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    private Servlet servlet;
 
 
     // main 의 application 에 있는 @EnableJpaAuditing 주석 처리 안하면 제대로 안돌아감.
@@ -90,9 +93,9 @@ public class CommentControllerTest {
     }
 
     @Test
-    public void getCommentsTest() throws Exception{
+    public void getCommentsTest() throws Exception {
 
-        // given - PathVariable, Pageable 객체, 응답 dto
+        // given - PathVariable, Pageable 객체, 응답 dto, service 행위
         Long taskId = 1L;
 
         Pageable pageable = PageRequest.of(0,10);
@@ -102,8 +105,29 @@ public class CommentControllerTest {
         when(commentService.getCommentList(taskId, pageable, null))
                 .thenReturn(response);
 
-        // when, then
+        // when, then - HttpStatus 검증으로 확인
         mockMvc.perform(get("/api/tasks/" + taskId + "/comments")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+
+    }
+
+    @Test
+    public void deleteCommentTest() throws Exception {
+
+        // given - PathVariable, 응답 dto, service 행위
+        Long taskId = 1L;
+        Long commentId = 1L;
+
+        ApiResponse<CommentResponseData> response = ApiResponse.createSuccess("삭제 성공!", null);
+
+        when(commentService.softDeleteComment(taskId, commentId))
+                .thenReturn(response);
+
+        // when, then - HttpStatus 검증으로 확인
+        mockMvc.perform(delete("/api/tasks/" + taskId + "/comments/" + commentId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
