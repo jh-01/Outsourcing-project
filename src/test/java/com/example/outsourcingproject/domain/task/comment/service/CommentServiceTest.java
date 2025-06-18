@@ -17,7 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +46,7 @@ public class CommentServiceTest {
     @Test
     public void addCommentTest() {
 
-        // given
+        // given - User, Task, repository 행위
         User user = new User();
         user.setName("이름");
 
@@ -63,7 +68,7 @@ public class CommentServiceTest {
         // when
         ApiResponse<?> saved = commentService.addComment(1L, "댓글 내용");
 
-        // then
+        // then - 댓글 내용 검증으로 확인
         CommentResponseData data = (CommentResponseData) saved.getData();
 
         assertThat(data.getContents()).isEqualTo("댓글 내용");
@@ -76,7 +81,7 @@ public class CommentServiceTest {
     @Test
     public void updateCommentTest() {
 
-        // given
+        // given - User, Comment, repository 행위
         Comment comment = new Comment();
         comment.setContents("수정전 내용");
         comment.setUser(new User());
@@ -86,10 +91,107 @@ public class CommentServiceTest {
         // when
         ApiResponse<?> updated = commentService.updateComment(1L, 1L, "수정후 내용");
 
-        //then
+        //then - 댓글 내용 검증으로 확인
         CommentResponseData data = (CommentResponseData) updated.getData();
 
         assertThat(data.getContents()).isEqualTo("수정후 내용");
 
     }
+
+
+    @Test
+    public void getCommentTest() {
+
+        // given - Pageable, User, Task, List<Comment>, Page<Comment>, repository 행위
+        Pageable pageable = PageRequest.of(0,10);
+
+        User user = new User();
+        Task task = new Task();
+
+        List<Comment> commentList = List.of(
+                new Comment("테스트 댓글1"),
+                new Comment( "테스트 댓글2"));
+        commentList.get(0).setUser(user);
+        commentList.get(1).setUser(user);
+        commentList.get(0).setTask(task);
+        commentList.get(1).setTask(task);
+
+        Page<Comment> testPage1 = new PageImpl<>(commentList, pageable, commentList.size());
+
+        when(commentRepository.findByTaskId(1L, pageable)).thenReturn(testPage1);
+
+        // when
+        ApiResponse<?> gotten = commentService.getCommentList(1L, pageable,null);
+
+        // then - 리스트의 내용을 검증하여 확인
+        List<CommentResponseData> data = (List<CommentResponseData>) gotten.getData();
+
+        assertThat(data.get(0).getContents()).isEqualTo("테스트 댓글1");
+        assertThat(data.get(1).getContents()).isEqualTo("테스트 댓글2");
+
+    }
+
+
+    @Test
+    public void getCommentTestIncludedKeyword() {
+
+        // given - Pageable, User, Task, List<Comment>, Page<Comment>, repository 행위
+        Pageable pageable = PageRequest.of(0,10);
+
+        User user = new User();
+        Task task = new Task();
+
+        List<Comment> commentList = List.of(
+                new Comment("테스트 댓글1"),
+                new Comment( "테스트 댓글2"));
+        commentList.get(0).setUser(user);
+        commentList.get(1).setUser(user);
+        commentList.get(0).setTask(task);
+        commentList.get(1).setTask(task);
+
+        List<Comment> filteredList = commentList.stream()
+                .filter(comment -> comment.getContents().contains("댓글2"))
+                .toList();
+
+        Page<Comment> testPage = new PageImpl<>(filteredList, pageable, commentList.size());
+
+        when(commentRepository.findByTaskIdAndContentsContaining(1L, "댓글2", pageable))
+                .thenReturn(testPage);
+
+        // when
+        ApiResponse<?> gotten = commentService.getCommentList(1L, pageable,"댓글2");
+
+        // then - 리스트의 내용을 검증하여 확인
+        List<CommentResponseData> data = (List<CommentResponseData>) gotten.getData();
+
+        assertThat(data.get(0).getContents()).contains("댓글2");
+
+    }
+
+
+    @Test
+    public void deleteCommentTest() {
+
+        // given - User, Task, Comment, repository 행위
+        User user = new User();
+        Task task = new Task();
+        Comment comment = new Comment();
+        comment.setTask(task);
+        comment.setUser(user);
+        comment.setDeleted(false);
+
+        when(commentRepository.findByIdAndTaskId(1L, 1L))
+                .thenReturn(Optional.of(comment));
+
+        // when
+        ApiResponse<?> deleted = commentService.softDeleteComment(1L, 1L);
+
+        // then - Comment 의 isdeleted 필드, 반환 data 가 null 인지 검증하여 확인
+        CommentResponseData data = (CommentResponseData) deleted.getData();
+
+        assertThat(data).isEqualTo(null);
+        assertThat(comment.isDeleted()).isEqualTo(true);
+
+    }
+
 }
