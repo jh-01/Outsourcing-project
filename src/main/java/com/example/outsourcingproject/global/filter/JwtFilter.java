@@ -1,5 +1,8 @@
 package com.example.outsourcingproject.global.filter;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import com.example.outsourcingproject.domain.user.entity.UserRole;
 import com.example.outsourcingproject.global.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,11 +13,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j(topic = "JwtFilter")
 @RequiredArgsConstructor
+@Component
 public class JwtFilter implements Filter {
 
     private final JwtUtil jwtUtil;
@@ -31,14 +39,15 @@ public class JwtFilter implements Filter {
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
+        // OPTIONS 요청은 CORS 사전 요청으로 별도의 인증 없이 바로 통과
         if (httpRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
             chain.doFilter(request, response);
             return;
         }
 
         // 회원가입, 로그인은 필터 건너뛰고 그대로 진행
-        if(requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
-            chain.doFilter(request,response);
+        if (requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
+            chain.doFilter(request, response);
             return;
         }
 
@@ -60,7 +69,22 @@ public class JwtFilter implements Filter {
             }
 
             httpRequest.setAttribute("id", Integer.parseInt(claims.getSubject()));
-            httpRequest.setAttribute("email", claims.get("email"));
+            httpRequest.setAttribute("role", claims.get("role"));
+
+            // 토큰에서 username 추출
+            String username = jwtUtil.extractUsername(jwt);
+
+            // 토큰에서 role 추출 후 UserRole enum 으로 변환
+            String role = jwtUtil.extractRoles(jwt);
+            UserRole userRole = UserRole.valueOf(role);
+
+            // 권한 정보를 SimpleGrantedAuthority 리스트로 생성
+            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userRole.getRole()));
+            User user = new User(username, "", authorities);
+
+            // SecurityContext에 인증 객체를 저장하여 현재 요청의 인증 상태를 설정
+            SecurityContextHolder.getContext()
+                    .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
 
 
             chain.doFilter(request, response);
