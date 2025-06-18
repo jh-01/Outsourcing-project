@@ -39,8 +39,8 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                         task.deadline,
                         task.status,
                         task.startAt,
-                        task.CreatedAt,
-                        task.ModifiedAt
+                        task.createdAt,
+                        task.modifiedAt
                 )
         ).from(task)
                 .leftJoin(task.manager)
@@ -65,8 +65,8 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                     task.deadline,
                     task.status,
                     task.startAt,
-                    task.CreatedAt,
-                    task.ModifiedAt
+                    task.createdAt,
+                    task.modifiedAt
             )).from(task)
                 .leftJoin(task.manager)
                 .leftJoin(task.generator)

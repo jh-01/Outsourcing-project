@@ -13,6 +13,10 @@ java {
     }
 }
 
+ext {
+    snippetsDir = file("build/generated-snippets")
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
