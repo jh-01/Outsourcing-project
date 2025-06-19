@@ -88,12 +88,16 @@ public class Logging {
     }
 
     private int extractFromToken(Object result) {
-        if (result instanceof ApiResponse<?> responseEntity) {
-            Map<String, String> body = (Map<String, String>) responseEntity.getData();
-            String token = body.get("token");
-            return jwtUtil.extractId(token);
+        if (request.getAttribute("id") == null) {
+            if (result instanceof ApiResponse<?> responseEntity) {
+                Map<String, String> body = (Map<String, String>) responseEntity.getData();
+                String token = body.get("token");
+                return jwtUtil.extractId(token);
+            }
+            return -1;
+        } else {
+            return (int) request.getAttribute("id");
         }
-        return -1;
     }
 
     private int extractFromResponse(Object result) {
