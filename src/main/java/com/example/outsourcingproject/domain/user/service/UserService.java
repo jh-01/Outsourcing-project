@@ -83,7 +83,7 @@ public class UserService {
         }
 
         // 이전 비밀번호와 새비밀번호가 동일하다면 예외
-        if(passwordEncoder.matches(newPassword, oldPassword)){
+        if(newPassword.equals(oldPassword)){
             throw new CustomException(ErrorType.PASSWORD_SAME);
         }
 
