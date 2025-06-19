@@ -63,10 +63,10 @@ dependencies {
 
 ext {
     snippetsDir = file('build/generated-snippets')
+    // Java 시간 타입(JSON 변환 지원)
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
+
 
 tasks.named('test') {
     useJUnitPlatform()
