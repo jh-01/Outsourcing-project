@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.user.dto;
 
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 

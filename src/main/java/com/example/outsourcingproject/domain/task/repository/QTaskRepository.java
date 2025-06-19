@@ -11,6 +11,5 @@ public interface QTaskRepository {
     TaskResponse findTaskById(Long id);
     Page<TaskResponse> findTasks(TaskReadRequest request);
     TaskOutline findDashboard();
-
     List<TaskResponse> findTasksByUserId(Long userId);
 }

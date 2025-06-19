@@ -145,7 +145,7 @@ public class TaskService {
                 .assigneeId((long) task.getAssignee().getId())
                 .assignee(AssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
-                .updatedAt(task.getModifiedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 
@@ -160,7 +160,7 @@ public class TaskService {
                 .assigneeId((long) task.getAssignee().getId())
                 .assignee(SimpleAssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
-                .updatedAt(task.getModifiedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 

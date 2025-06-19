@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'nu.studer.jooq' version '8.2'
 }
 
 group = 'com.example'
@@ -64,6 +65,17 @@ dependencies {
 
     // Java 시간 타입(JSON 변환 지원)
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // Jooq
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    // ✅ jOOQ
+    implementation 'org.jooq:jooq'
+
+    // ✅ MySQL JDBC Driver
+    implementation 'com.mysql:mysql-connector-j'
+
+    // ✅ jOOQ 코드 생성 시 필요
+    jooqGenerator 'com.mysql:mysql-connector-j'
 }
 
 //ext {
@@ -79,4 +91,46 @@ tasks.named('test') {
 
     // 추가된 부분
     jvmArgs "-Xshare:off"
+}
+
+jooq {
+    version = '3.18.7' // jOOQ version
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS
+
+    configurations {
+        main {
+            generationTool {
+                jdbc {
+                    driver = 'com.mysql.cj.jdbc.Driver'
+                    url = 'jdbc:mysql://localhost:3306/outsourcing?serverTimezone=UTC'
+                    user = 'root'
+                    password = 'Ttp200113!'
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    strategy {
+                        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                    }
+                    database {
+                        name = 'org.jooq.meta.mysql.MySQLDatabase'
+                        inputSchema = 'outsourcing'
+                        includes = '.*' // 이걸 명시적으로 추가!
+                    }
+                    generate {
+                        pojos = true
+                        daos = true
+                        springAnnotations = true
+                        immutablePojos = true
+                        interfaces = true
+                        immutableInterfaces = true
+                    }
+
+                    target {
+                        packageName = 'com.example.jooq.generated'
+                        directory = "$buildDir/generated-src/jooq/main"
+                    }
+                }
+            }
+        }
+    }
 }
