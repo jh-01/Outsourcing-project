@@ -101,13 +101,6 @@ public class CommentService {
         // 수정된 댓글 저장
         commentRepository.save(comment);
 
-        // data 에 넣을 task 조회
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new CustomException(ErrorType.TASK_NOT_FOUND));
-
-        // data 에 넣을 user 조회
-        Integer userId = (Integer) servletRequest.getAttribute("id");
-        User user = userRepository.findById((long)userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
-
         // data 객체 생성
         CommentUserData userData = new CommentUserData(
                 comment.getUser().getId(),
@@ -133,7 +126,7 @@ public class CommentService {
 
 
     // 댓글 조회 로직
-    public ApiResponse<List<CommentResponseData>> getCommentList(Long taskId, Pageable pageable, String keyword) {
+    public ApiResponse<Page<CommentData>> getCommentList(Long taskId, Pageable pageable, String keyword, HttpServletRequest servletRequest) {
 
         // 댓글 리스트 조회
         Page<Comment> comments;
@@ -145,13 +138,25 @@ public class CommentService {
         }
 
         // data 만들기
-        List<CommentResponseData> data = comments.getContent().stream()
+        List<CommentData> commentDataList = comments.getContent().stream()
                 .map((comment) ->
-                        new CommentResponseData(
+                        new CommentData(
+                                comment.getId(),
+                                comment.getContents(),
                                 comment.getTask().getId(),
-                                comment.getUser().getName(),
-                                comment.getContents()))
+                                comment.getTask().getGenerator().getId(),
+                                new CommentUserData(
+                                        comment.getUser().getId(),
+                                        comment.getUser().getUsername(),
+                                        comment.getUser().getName(),
+                                        comment.getUser().getEmail()
+                                ),
+                                comment.getCreatedAt(),
+                                comment.getModifiedAt()
+                        ))
                 .collect(Collectors.toList());
+
+        Page<CommentData> data = new PageImpl<>(commentDataList, pageable, commentDataList.size());
 
         // 응답객체 반환
         return ApiResponse.createSuccess("조회 성공!", data);

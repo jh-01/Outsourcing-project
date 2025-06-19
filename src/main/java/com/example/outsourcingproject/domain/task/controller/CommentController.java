@@ -46,11 +46,12 @@ public class CommentController {
     // 댓글 수정
     @LogWrite(type = LogType.COMMENT_UPDATED)
     @PatchMapping("/{task_id}/comments/{id}")
-    public ResponseEntity<ApiResponse<CommentResponseData>> changeComment(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<CommentData>> changeComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId,
-                                                            @Valid @RequestBody CommentRequestDto requestDto) {
+                                                            @Valid @RequestBody CommentRequestDto requestDto,
+                                                            HttpServletRequest servletRequest) {
 
-        ApiResponse<CommentResponseData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents());
+        ApiResponse<CommentData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents(), servletRequest);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
@@ -58,13 +59,14 @@ public class CommentController {
 
     // 댓글 조회
     @GetMapping("/{task_id}/comments")
-    public ResponseEntity<ApiResponse<List<CommentResponseData>>> getComments(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<Page<CommentData>>> getComments(@PathVariable("task_id") Long taskId,
                                                                 // 페이지 기본값 설정
                                                                 @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                                                 Pageable pageable,
-                                                                @RequestParam(required = false) String keyword) {
+                                                                @RequestParam(required = false) String keyword,
+                                                                HttpServletRequest servletRequest) {
 
-        ApiResponse<List<CommentResponseData>> response = commentService.getCommentList(taskId, pageable, keyword);
+        ApiResponse<Page<CommentData>> response = commentService.getCommentList(taskId, pageable, keyword, servletRequest);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
