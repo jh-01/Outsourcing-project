@@ -86,7 +86,7 @@ public class CommentService {
 
     // 댓글 수정 로직
     @Transactional
-    public ApiResponse<CommentResponseData> updateComment(Long taskId, Long commentId, String contents) {
+    public ApiResponse<CommentData> updateComment(Long taskId, Long commentId, String contents, HttpServletRequest servletRequest) {
 
         System.out.println(" 댓글 수정 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
@@ -101,8 +101,30 @@ public class CommentService {
         // 수정된 댓글 저장
         commentRepository.save(comment);
 
+        // data 에 넣을 task 조회
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new CustomException(ErrorType.TASK_NOT_FOUND));
+
+        // data 에 넣을 user 조회
+        Integer userId = (Integer) servletRequest.getAttribute("id");
+        User user = userRepository.findById((long)userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+
         // data 객체 생성
-        CommentResponseData data = new CommentResponseData(taskId, comment.getUser().getName(), comment.getContents());
+        CommentUserData userData = new CommentUserData(
+                comment.getUser().getId(),
+                comment.getUser().getUsername(),
+                comment.getUser().getName(),
+                comment.getUser().getEmail()
+        );
+
+        CommentData data = new CommentData(
+                comment.getId(),
+                comment.getContents(),
+                comment.getTask().getId(),
+                comment.getTask().getGenerator().getId(),
+                userData,
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
 
         return ApiResponse.createSuccess("수정 성공!", data);
 
