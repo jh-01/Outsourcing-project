@@ -86,7 +86,7 @@ public class CommentService {
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
 
         // 수정할 댓글 가져오기
-        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(commentId, taskId).
                 orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 댓글 수정
@@ -167,7 +167,7 @@ public class CommentService {
     public ApiResponse<CommentData> softDeleteComment(Long taskId, Long commentId) {
 
         // 삭제할 댓글 조회
-        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(commentId, taskId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 소프트 삭제 수행
         comment.setDeleted(true);

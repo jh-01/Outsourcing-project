@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 조회
-    Optional<Comment> findByIdAndTaskIdAndIsDeletedFalse(Long taskId, Long commentId);
+    Optional<Comment> findByIdAndTaskIdAndIsDeletedFalse(Long commentId, Long taskId);
 
     // 댓글 페이지에 담아서 조회
     Page<Comment> findByTaskIdAndIsDeletedFalse(Long taskId, Pageable pageable);
