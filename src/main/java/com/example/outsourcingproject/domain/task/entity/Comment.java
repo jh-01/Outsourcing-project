@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Where(clause = "is_deleted = false")
 @Getter
 @Setter
 @Table
@@ -24,7 +26,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private String contents;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -40,7 +42,7 @@ public class Comment extends BaseTimeEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    public Comment(String contents) {
-        this.contents = contents;
+    public Comment(String content) {
+        this.content = content;
     }
 }
