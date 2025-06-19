@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class CommentService {
     private TaskRepository taskRepository;
 
     // 댓글 생성 로직
-    public final CommentResponseDto addComment(Long taskId, String contents) {
+    public CommentResponseDto addComment(Long taskId, String contents) {
 
         Comment comment = new Comment(contents);
 

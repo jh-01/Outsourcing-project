@@ -4,8 +4,8 @@ import com.example.outsourcingproject.domain.task.entity.Priority;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.user.dto.AssigneeResponse;
 import com.example.outsourcingproject.global.log.LoggableResponse;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +44,7 @@ public class TaskResponse implements LoggableResponse {
         this.updatedAt = updatedAt;
     }
 
+    @JsonIgnore
     @Override
     public int getTargetId() {
         return id.intValue();
