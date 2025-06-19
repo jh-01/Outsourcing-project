@@ -13,6 +13,10 @@ java {
     }
 }
 
+ext {
+    snippetsDir = file("build/generated-snippets")
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -36,6 +40,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.h2database:h2'
 
     // 비밀번호 암호화
     implementation 'at.favre.lib:bcrypt:0.10.2'
