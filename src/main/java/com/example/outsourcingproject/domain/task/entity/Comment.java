@@ -24,7 +24,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private String contents;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -40,7 +40,7 @@ public class Comment extends BaseTimeEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    public Comment(String contents) {
-        this.contents = contents;
+    public Comment(String content) {
+        this.content = content;
     }
 }
