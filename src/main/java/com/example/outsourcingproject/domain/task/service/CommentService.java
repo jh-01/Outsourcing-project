@@ -1,7 +1,5 @@
 package com.example.outsourcingproject.domain.task.service;
 
-import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
-import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 import com.example.outsourcingproject.domain.task.dto.response.CommentData;
 import com.example.outsourcingproject.domain.task.dto.response.CommentUserData;
 import com.example.outsourcingproject.domain.task.entity.Comment;
@@ -13,12 +11,10 @@ import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.example.outsourcingproject.global.common.ApiResponse.createSuccess;
 
 @Getter
 @Service
@@ -71,7 +65,7 @@ public class CommentService {
 
         CommentData data = new CommentData(
                 comment.getId(),
-                comment.getContents(),
+                comment.getContent(),
                 comment.getTask().getId(),
                 comment.getTask().getGenerator().getId(),
                 userData,
@@ -92,11 +86,11 @@ public class CommentService {
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
 
         // 수정할 댓글 가져오기
-        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).
                 orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 댓글 수정
-        comment.setContents(contents);
+        comment.setContent(contents);
 
         // 수정된 댓글 저장
         commentRepository.save(comment);
@@ -111,7 +105,7 @@ public class CommentService {
 
         CommentData data = new CommentData(
                 comment.getId(),
-                comment.getContents(),
+                comment.getContent(),
                 comment.getTask().getId(),
                 comment.getTask().getGenerator().getId(),
                 userData,
@@ -132,9 +126,13 @@ public class CommentService {
         Page<Comment> comments;
 
         if(!(keyword == null) && !keyword.isBlank()) {
-            comments = commentRepository.findByTaskIdAndContentsContaining(taskId, keyword, pageable);
+            comments = commentRepository.findByTaskIdAndContentContainingAndIsDeletedFalse(taskId, keyword, pageable);
         } else {
-            comments = commentRepository.findByTaskId(taskId, pageable);
+            comments = commentRepository.findByTaskIdAndIsDeletedFalse(taskId, pageable);
+        }
+
+        if(comments == null) {
+            throw new CustomException(ErrorType.COMMENT_NOT_FOUND);
         }
 
         // data 만들기
@@ -142,7 +140,7 @@ public class CommentService {
                 .map((comment) ->
                         new CommentData(
                                 comment.getId(),
-                                comment.getContents(),
+                                comment.getContent(),
                                 comment.getTask().getId(),
                                 comment.getTask().getGenerator().getId(),
                                 new CommentUserData(
@@ -166,10 +164,10 @@ public class CommentService {
 
     // 댓글 삭제 로직 - 소프트 삭제
     @Transactional
-    public ApiResponse<CommentResponseData> softDeleteComment(Long taskId, Long commentId) {
+    public ApiResponse<CommentData> softDeleteComment(Long taskId, Long commentId) {
 
         // 삭제할 댓글 조회
-        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 소프트 삭제 수행
         comment.setDeleted(true);
@@ -179,7 +177,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         // 성공시 반환할 data 에 null 할당
-        CommentResponseData data = null;
+        CommentData data = null;
 
         return ApiResponse.createSuccess("삭제 성공!", data);
 

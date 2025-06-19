@@ -1,11 +1,8 @@
 package com.example.outsourcingproject.domain.task.controller;
 
 import com.example.outsourcingproject.domain.log.entity.LogType;
-import com.example.outsourcingproject.domain.task.dto.CommentRequestDto;
-import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
-import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
+import com.example.outsourcingproject.domain.task.dto.request.CommentRequestDto;
 import com.example.outsourcingproject.domain.task.dto.response.CommentData;
-import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.log.annotation.LogWrite;
@@ -18,10 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -37,7 +31,7 @@ public class CommentController {
                                                                   @Valid @RequestBody CommentRequestDto requestDto,
                                                                   HttpServletRequest servletRequest) {
 
-        ApiResponse<CommentData> responseDto =  commentService.addComment(taskId, requestDto.getContents(), servletRequest);
+        ApiResponse<CommentData> responseDto =  commentService.addComment(taskId, requestDto.getContent(), servletRequest);
 
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
 
@@ -51,7 +45,7 @@ public class CommentController {
                                                             @Valid @RequestBody CommentRequestDto requestDto,
                                                             HttpServletRequest servletRequest) {
 
-        ApiResponse<CommentData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents(), servletRequest);
+        ApiResponse<CommentData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContent(), servletRequest);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
@@ -75,10 +69,10 @@ public class CommentController {
     // 댓글 삭제
     @LogWrite(type = LogType.COMMENT_DELETED)
     @DeleteMapping("/{task_id}/comments/{id}")
-    public ResponseEntity<ApiResponse<CommentResponseData>> deleteComment(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<CommentData>> deleteComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId) {
 
-        ApiResponse<CommentResponseData> responseDto = commentService.softDeleteComment(taskId, commentId);
+        ApiResponse<CommentData> responseDto = commentService.softDeleteComment(taskId, commentId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
