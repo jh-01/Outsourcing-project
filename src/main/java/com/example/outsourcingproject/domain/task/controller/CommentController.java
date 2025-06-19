@@ -36,11 +36,11 @@ public class CommentController {
                                                                           @Valid @RequestBody CommentRequestDto requestDto,
                                                                           HttpServletRequest servletRequest) {
 
-//        System.out.println("🔥 CommentService injected in controller: " + commentService);
-//        System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
-//        System.out.println("commentRepository 가 null 인지 : " + commentService.getCommentRepository());
-//        System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
-//        System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
+        System.out.println("🔥 CommentService injected in controller: " + commentService);
+        System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
+        System.out.println("commentRepository 가 null 인지 : " + commentService.getCommentRepository());
+        System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
+        System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
 
         ApiResponse<CommentResponseData> responseDto =  commentService.addComment(taskId, requestDto.getContents(), servletRequest);
 
@@ -49,6 +49,7 @@ public class CommentController {
     }
 
     // 댓글 수정
+    @LogWrite(type = LogType.COMMENT_UPDATED)
     @PatchMapping("/{task_id}/comments/{id}")
     public ResponseEntity<ApiResponse<CommentResponseData>> changeComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId,
@@ -75,6 +76,7 @@ public class CommentController {
     }
 
     // 댓글 삭제
+    @LogWrite(type = LogType.COMMENT_DELETED)
     @DeleteMapping("/{task_id}/comments/{id}")
     public ResponseEntity<ApiResponse<CommentResponseData>> deleteComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId) {

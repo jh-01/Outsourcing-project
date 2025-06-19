@@ -35,7 +35,7 @@ public enum LogType {
      userId = { token }
      targetId = { request: { task_id} }
      */
-    COMMENT_CREATED(IdSource.TOKEN,IdSource.PATH_VARIABLE,"taskId"),
+    COMMENT_CREATED(IdSource.TOKEN,IdSource.PATH_VARIABLE,"task_id"),
 
     /*
      userId = { token }
