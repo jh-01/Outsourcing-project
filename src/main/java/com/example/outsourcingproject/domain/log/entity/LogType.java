@@ -35,7 +35,7 @@ public enum LogType {
      userId = { token }
      targetId = { request: { task_id} }
      */
-    COMMENT_CREATED(IdSource.TOKEN,IdSource.PATH_VARIABLE,"taskId"),
+    COMMENT_CREATED(IdSource.TOKEN,IdSource.PATH_VARIABLE,"task_id"),
 
     /*
      userId = { token }
@@ -53,12 +53,12 @@ public enum LogType {
      userId = { token }
      targetId = { token }
      */
-    USER_LOGGED_IN(IdSource.TOKEN,IdSource.TOKEN,""),
+    USER_LOGGED_IN(IdSource.NULL,IdSource.TOKEN,""),
     /*
      userId = { token }
      targetId = { token }
      */
-    USER_LOGGED_OUT(IdSource.TOKEN,IdSource.TOKEN,"");
+    USER_LOGGED_OUT(IdSource.TOKEN,IdSource.NULL,"");
 
     private final IdSource userSource;
     private final IdSource targetSource;
