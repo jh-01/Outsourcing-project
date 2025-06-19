@@ -42,8 +42,8 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                         task.status,
                         task.assignee.id.longValue(),
                         new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
-                        task.CreatedAt,
-                        task.ModifiedAt
+                        task.createdAt,
+                        task.modifiedAt
                 )
         ).from(task)
                 .leftJoin(task.assignee)
@@ -67,8 +67,8 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                     task.status,
                     task.assignee.id.longValue(),
                     new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
-                    task.CreatedAt,
-                    task.ModifiedAt
+                    task.createdAt,
+                    task.modifiedAt
             )).from(task)
                 .leftJoin(task.assignee)
                 .leftJoin(task.generator)
@@ -126,8 +126,8 @@ public class QTaskRepositoryImpl implements QTaskRepository {
                                 task.status,
                                 task.assignee.id.longValue(),
                                 new QAssigneeResponse(task.assignee.id.longValue(), task.assignee.username, task.assignee.name, task.assignee.email),
-                                task.CreatedAt,
-                                task.ModifiedAt
+                                task.createdAt,
+                                task.modifiedAt
                         )).from(task)
                 .leftJoin(task.assignee)
                 .leftJoin(task.generator)
