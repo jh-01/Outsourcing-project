@@ -1,7 +1,7 @@
 //package com.example.outsourcingproject.domain.task.comment.controller;
 //
 //import com.example.outsourcingproject.domain.task.controller.CommentController;
-//import com.example.outsourcingproject.domain.task.dto.CommentRequestDto;
+//import com.example.outsourcingproject.domain.task.dto.request.CommentRequestDto;
 //import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
 //import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
 //import com.example.outsourcingproject.domain.task.service.CommentService;
