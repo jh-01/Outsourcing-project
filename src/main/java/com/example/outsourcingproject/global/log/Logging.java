@@ -95,7 +95,9 @@ public class Logging {
                 return jwtUtil.extractId(token);
             }
             return -1;
-        } else return (int) request.getAttribute("id");
+        } else {
+            return (int) request.getAttribute("id");
+        }
     }
 
     private int extractFromResponse(Object result) {
