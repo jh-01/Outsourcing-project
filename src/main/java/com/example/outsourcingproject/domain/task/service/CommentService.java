@@ -48,7 +48,7 @@ public class CommentService {
     }
 
     // 댓글 생성 로직
-    public final ApiResponse<CommentResponseData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
+    public ApiResponse<CommentResponseData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
 
         System.out.println(" 댓글 생성 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 생성 api 의 commentRepository : " + commentRepository);
