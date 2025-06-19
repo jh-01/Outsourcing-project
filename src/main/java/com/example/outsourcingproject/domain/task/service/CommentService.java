@@ -60,10 +60,10 @@ public class CommentService {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new CustomException(ErrorType.TASK_NOT_FOUND));
 
         // 토큰에서 user_id 가져오기
-        Long userId = (Long) servletRequest.getAttribute("id");
+        Integer userId = (Integer) servletRequest.getAttribute("id");
 
         // userId 로 user 조회
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
+        User user = userRepository.findById((long)userId).orElseThrow(() -> new CustomException(ErrorType.USER_NOT_FOUND));
 
         // 댓글 저장
         comment.setTask(task);
