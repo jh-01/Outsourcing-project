@@ -3,12 +3,13 @@ package com.example.outsourcingproject.global.util;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
@@ -81,6 +82,7 @@ public class JwtUtil {
     public int extractId(String token){
         return Integer.parseInt(extractClaims(token).getSubject());
     }
+
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
