@@ -4,7 +4,9 @@ import com.example.outsourcingproject.domain.log.entity.IdSource;
 import com.example.outsourcingproject.domain.log.entity.Log;
 import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.log.repository.LogRepository;
+import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.log.annotation.LogWrite;
+import com.example.outsourcingproject.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +15,12 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Map;
 
 @Slf4j
 @Aspect
@@ -27,6 +29,7 @@ import java.lang.reflect.Parameter;
 public class Logging {
     private final HttpServletRequest request;
     private final LogRepository logRepository;
+    private final JwtUtil jwtUtil;
 
     @Around("@annotation(logWrite)")
     @Transactional
@@ -49,7 +52,7 @@ public class Logging {
 
     private int extractId(IdSource source,String targetKey, Object result, ProceedingJoinPoint joinPoint) {
         return switch (source) {
-            case TOKEN -> extractFromToken();
+            case TOKEN -> extractFromToken(result);
             case PATH_VARIABLE -> extractFromPathVariable(joinPoint, targetKey);
             case RESPONSE -> extractFromResponse(result);
             case NULL -> -1;
@@ -84,13 +87,18 @@ public class Logging {
         return -1;
     }
 
-    private int extractFromToken() {
-        return request.getAttribute("id") == null ? -1 : (int) request.getAttribute("id");
+    private int extractFromToken(Object result) {
+        if (result instanceof ApiResponse<?> responseEntity) {
+            Map<String, String> body = (Map<String, String>) responseEntity.getData();
+            String token = body.get("token");
+            return jwtUtil.extractId(token);
+        }
+        return -1;
     }
 
     private int extractFromResponse(Object result) {
-        if (result instanceof ResponseEntity<?> responseEntity) {
-            Object body = responseEntity.getBody();
+        if (result instanceof ApiResponse<?> responseEntity) {
+            Object body = responseEntity.getData();
             if (body instanceof LoggableResponse loggable) {
                 return loggable.getTargetId();
             }
