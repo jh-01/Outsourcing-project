@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 @JsonPropertyOrder({
-        "commentId",
+        "id",
         "content",
         "taskId",
         "userId",
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentData {
 
-    private Long commentId;
+    private Long id;
     private String content;
     private Long taskId;
     private Integer userId;
