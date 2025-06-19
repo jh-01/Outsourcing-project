@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.task.service;
 
 import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
+import com.example.outsourcingproject.domain.task.dto.response.CommentData;
+import com.example.outsourcingproject.domain.task.dto.response.CommentUserData;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
@@ -37,22 +39,10 @@ public class CommentService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    @PostConstruct
-    public void init() {
-        System.out.println("🔥 CommentService created by Spring: " + this);
-        System.out.println("🔥 부팅 시점의 CommentService class: " + this.getClass());
-        System.out.println(" taskRepository: " + taskRepository);
-        System.out.println("commentRepository: " + commentRepository);
-        System.out.println("taskRepository 의 주소 : " + taskRepository.getClass());
-        System.out.println("commentRepository 의 주소 : " + commentRepository.getClass());
-    }
+
 
     // 댓글 생성 로직
-    public ApiResponse<CommentResponseData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
-
-        System.out.println(" 댓글 생성 api 의 taskRepository: " + taskRepository);
-        System.out.println("댓글 생성 api 의 commentRepository : " + commentRepository);
-        System.out.println("댓글 생성 api 의 userRepository : " + userRepository);
+    public ApiResponse<CommentData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
 
         Comment comment = new Comment(contents);
 
@@ -72,7 +62,22 @@ public class CommentService {
 
 
         // data 객체 생성
-        CommentResponseData data = new CommentResponseData(taskId, comment.getUser().getName(), comment.getContents());
+        CommentUserData userData = new CommentUserData(
+                comment.getUser().getId(),
+                comment.getUser().getUsername(),
+                comment.getUser().getName(),
+                comment.getUser().getEmail()
+        );
+
+        CommentData data = new CommentData(
+                comment.getId(),
+                comment.getContents(),
+                comment.getTask().getId(),
+                comment.getTask().getGenerator().getId(),
+                userData,
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
 
         return ApiResponse.createSuccess("댓글 생성 성공!", data);
 
@@ -81,7 +86,7 @@ public class CommentService {
 
     // 댓글 수정 로직
     @Transactional
-    public ApiResponse<CommentResponseData> updateComment(Long taskId, Long commentId, String contents) {
+    public ApiResponse<CommentData> updateComment(Long taskId, Long commentId, String contents, HttpServletRequest servletRequest) {
 
         System.out.println(" 댓글 수정 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
@@ -97,7 +102,22 @@ public class CommentService {
         commentRepository.save(comment);
 
         // data 객체 생성
-        CommentResponseData data = new CommentResponseData(taskId, comment.getUser().getName(), comment.getContents());
+        CommentUserData userData = new CommentUserData(
+                comment.getUser().getId(),
+                comment.getUser().getUsername(),
+                comment.getUser().getName(),
+                comment.getUser().getEmail()
+        );
+
+        CommentData data = new CommentData(
+                comment.getId(),
+                comment.getContents(),
+                comment.getTask().getId(),
+                comment.getTask().getGenerator().getId(),
+                userData,
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
 
         return ApiResponse.createSuccess("수정 성공!", data);
 
@@ -106,7 +126,7 @@ public class CommentService {
 
 
     // 댓글 조회 로직
-    public ApiResponse<List<CommentResponseData>> getCommentList(Long taskId, Pageable pageable, String keyword) {
+    public ApiResponse<Page<CommentData>> getCommentList(Long taskId, Pageable pageable, String keyword, HttpServletRequest servletRequest) {
 
         // 댓글 리스트 조회
         Page<Comment> comments;
@@ -118,13 +138,25 @@ public class CommentService {
         }
 
         // data 만들기
-        List<CommentResponseData> data = comments.getContent().stream()
+        List<CommentData> commentDataList = comments.getContent().stream()
                 .map((comment) ->
-                        new CommentResponseData(
+                        new CommentData(
+                                comment.getId(),
+                                comment.getContents(),
                                 comment.getTask().getId(),
-                                comment.getUser().getName(),
-                                comment.getContents()))
+                                comment.getTask().getGenerator().getId(),
+                                new CommentUserData(
+                                        comment.getUser().getId(),
+                                        comment.getUser().getUsername(),
+                                        comment.getUser().getName(),
+                                        comment.getUser().getEmail()
+                                ),
+                                comment.getCreatedAt(),
+                                comment.getModifiedAt()
+                        ))
                 .collect(Collectors.toList());
+
+        Page<CommentData> data = new PageImpl<>(commentDataList, pageable, commentDataList.size());
 
         // 응답객체 반환
         return ApiResponse.createSuccess("조회 성공!", data);

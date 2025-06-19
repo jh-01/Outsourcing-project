@@ -4,6 +4,7 @@ import com.example.outsourcingproject.domain.log.entity.LogType;
 import com.example.outsourcingproject.domain.task.dto.CommentRequestDto;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
 import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
+import com.example.outsourcingproject.domain.task.dto.response.CommentData;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.global.common.ApiResponse;
@@ -32,17 +33,11 @@ public class CommentController {
     // 댓글 생성
     @LogWrite(type = LogType.COMMENT_CREATED)
     @PostMapping("/{task_id}/comments")
-    public ResponseEntity<ApiResponse<CommentResponseData>> createComment(@PathVariable("task_id") Long taskId,
-                                                                          @Valid @RequestBody CommentRequestDto requestDto,
-                                                                          HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResponse<CommentData>> createComment(@PathVariable("task_id") Long taskId,
+                                                                  @Valid @RequestBody CommentRequestDto requestDto,
+                                                                  HttpServletRequest servletRequest) {
 
-        System.out.println("🔥 CommentService injected in controller: " + commentService);
-        System.out.println("taskRepository 가 null 인지 : " + commentService.getTaskRepository());
-        System.out.println("commentRepository 가 null 인지 : " + commentService.getCommentRepository());
-        System.out.println("taskRepository 의 주소 = " + commentService.getTaskRepository().getClass());
-        System.out.println("commentRepository 의 주소 = " + commentService.getCommentRepository().getClass());
-
-        ApiResponse<CommentResponseData> responseDto =  commentService.addComment(taskId, requestDto.getContents(), servletRequest);
+        ApiResponse<CommentData> responseDto =  commentService.addComment(taskId, requestDto.getContents(), servletRequest);
 
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
 
@@ -51,11 +46,12 @@ public class CommentController {
     // 댓글 수정
     @LogWrite(type = LogType.COMMENT_UPDATED)
     @PatchMapping("/{task_id}/comments/{id}")
-    public ResponseEntity<ApiResponse<CommentResponseData>> changeComment(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<CommentData>> changeComment(@PathVariable("task_id") Long taskId,
                                                             @PathVariable("id") Long commentId,
-                                                            @Valid @RequestBody CommentRequestDto requestDto) {
+                                                            @Valid @RequestBody CommentRequestDto requestDto,
+                                                            HttpServletRequest servletRequest) {
 
-        ApiResponse<CommentResponseData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents());
+        ApiResponse<CommentData> responseDto = commentService.updateComment(taskId, commentId, requestDto.getContents(), servletRequest);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
@@ -63,13 +59,14 @@ public class CommentController {
 
     // 댓글 조회
     @GetMapping("/{task_id}/comments")
-    public ResponseEntity<ApiResponse<List<CommentResponseData>>> getComments(@PathVariable("task_id") Long taskId,
+    public ResponseEntity<ApiResponse<Page<CommentData>>> getComments(@PathVariable("task_id") Long taskId,
                                                                 // 페이지 기본값 설정
                                                                 @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                                                 Pageable pageable,
-                                                                @RequestParam(required = false) String keyword) {
+                                                                @RequestParam(required = false) String keyword,
+                                                                HttpServletRequest servletRequest) {
 
-        ApiResponse<List<CommentResponseData>> response = commentService.getCommentList(taskId, pageable, keyword);
+        ApiResponse<Page<CommentData>> response = commentService.getCommentList(taskId, pageable, keyword, servletRequest);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
