@@ -18,6 +18,7 @@ public class DashboardController {
     public ApiResponse<?> getDashboard(
             HttpServletRequest request
     ) {
-        return ApiResponse.createSuccess("대시보드 조회 성공", dashboardService.getDashboard((Long) request.getAttribute("id")));
+        Number id = (Number) request.getAttribute("id");
+        return ApiResponse.createSuccess("대시보드 조회 성공", dashboardService.getDashboard(id.longValue()));
     }
 }

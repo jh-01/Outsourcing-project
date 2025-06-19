@@ -1,7 +1,6 @@
 package com.example.outsourcingproject.domain.task.dto.response;
 
 import lombok.*;
-
 import java.util.List;
 
 @Getter

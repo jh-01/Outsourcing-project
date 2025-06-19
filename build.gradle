@@ -66,9 +66,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
 
 tasks.named('test') {
     useJUnitPlatform()

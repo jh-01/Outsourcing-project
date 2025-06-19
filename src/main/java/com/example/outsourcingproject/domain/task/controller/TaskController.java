@@ -82,13 +82,13 @@ public class TaskController {
             @ModelAttribute TaskReadRequest taskReadRequest
             ){
         TaskListResponse taskList = taskService.findTasks(taskReadRequest);
-        return ApiResponse.createSuccess("조회 성공", taskList);
+        return ApiResponse.createSuccess("Task 목록을 조회했습니다.", taskList);
     }
 
     // 태스크 단건 조회
     @GetMapping("/{id}")
     public ApiResponse<?> getTask(@PathVariable @NotNull Long id){
         TaskResponse task = taskService.findTask(id);
-        return ApiResponse.createSuccess("조회 성공", task);
+        return ApiResponse.createSuccess("Task를 조회했습니다.", task);
     }
 }

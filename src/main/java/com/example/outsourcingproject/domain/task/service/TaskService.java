@@ -10,6 +10,7 @@ import com.example.outsourcingproject.domain.task.dto.response.TaskResponse;
 import com.example.outsourcingproject.domain.task.dto.response.TaskStatusResponse;
 import com.example.outsourcingproject.domain.task.entity.Status;
 import com.example.outsourcingproject.domain.task.entity.Task;
+import com.example.outsourcingproject.domain.task.repository.QTaskRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.user.dto.AssigneeResponse;
 import com.example.outsourcingproject.domain.user.dto.SimpleAssigneeResponse;
@@ -144,7 +145,7 @@ public class TaskService {
                 .assigneeId((long) task.getAssignee().getId())
                 .assignee(AssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
-                .updatedAt(task.getModifiedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 
@@ -159,7 +160,7 @@ public class TaskService {
                 .assigneeId((long) task.getAssignee().getId())
                 .assignee(SimpleAssigneeResponse.from(task.getAssignee()))
                 .createdAt(task.getCreatedAt())
-                .updatedAt(task.getModifiedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 
@@ -176,6 +177,10 @@ public class TaskService {
 
     public TaskListResponse findTasks(TaskReadRequest request) {
         Page<TaskResponse> taskResponsePage = taskRepository.findTasks(request);
+        if (taskResponsePage == null) {
+            throw new CustomException(ErrorType.TASK_FETCH_FAILED); // 새 에러타입 추가 추천
+        }
+
         return TaskListResponse.builder()
                 .content(taskResponsePage.getContent())
                 .paging(PagingResponse.builder()
