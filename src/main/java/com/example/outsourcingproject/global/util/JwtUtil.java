@@ -1,6 +1,8 @@
 package com.example.outsourcingproject.global.util;
 
 import com.example.outsourcingproject.domain.user.entity.UserRole;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -75,6 +77,10 @@ public class JwtUtil {
      */
     public String extractRoles(String token) {
         return extractClaims(token).get("role", String.class);
+    }
+
+    public int extractId(String token){
+        return Integer.parseInt(extractClaims(token).getSubject());
     }
 
     public String extractUsername(String token) {
