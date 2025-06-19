@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.global.common;
 
-import com.example.outsourcingproject.global.exception.CustomException;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 
@@ -19,8 +19,8 @@ public class ApiResponse<T> {
     }
 
     // 커스텀 예외 발생
-    public static <T >ApiResponse<T> createError(CustomException e) {
-        return new ApiResponse<>(false, e.getErrorType().getErrorMessage(), null, LocalDateTime.now());
+    public static <T> ApiResponse<T> createError(ErrorType errorType) {
+        return new ApiResponse<>(false, errorType.getErrorMessage(), null, LocalDateTime.now());
     }
 
     // Validation 예외 발생

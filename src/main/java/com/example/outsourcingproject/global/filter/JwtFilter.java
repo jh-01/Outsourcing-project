@@ -1,9 +1,12 @@
 package com.example.outsourcingproject.global.filter;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import com.example.outsourcingproject.domain.user.entity.UserRole;
+import com.example.outsourcingproject.global.common.ApiResponse;
+import com.example.outsourcingproject.global.exception.ErrorType;
 import com.example.outsourcingproject.global.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,8 +16,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -54,7 +60,7 @@ public class JwtFilter implements Filter {
         // JWT 토큰 여부 확인
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             log.info("JWT 토큰이 필요 합니다.");
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT 토큰이 필요 합니다.");
+            sendErrorResponse((HttpServletResponse)response, ErrorType.TOKEN_NOT_FOUND);
             return;
         }
 
@@ -64,7 +70,7 @@ public class JwtFilter implements Filter {
             // JWT 유효성 검사와 claims 추출
             Claims claims = jwtUtil. extractClaims(jwt);
             if (claims == null) {
-                httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+                sendErrorResponse((HttpServletResponse)response, ErrorType.INVALID_TOKEN);
                 return;
             }
 
@@ -90,17 +96,29 @@ public class JwtFilter implements Filter {
             chain.doFilter(request, response);
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+            sendErrorResponse((HttpServletResponse)response, ErrorType.INVALID_SIGNATURE);
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+            sendErrorResponse((HttpServletResponse)response, ErrorType.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+            sendErrorResponse((HttpServletResponse)response, ErrorType.UNSUPPORTED_TOKEN);
         } catch (Exception e) {
             log.error("Invalid JWT token, 유효하지 않는 JWT 토큰 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
+            sendErrorResponse((HttpServletResponse)response, ErrorType.INVALID_TOKEN);
         }
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, ErrorType errorType) throws IOException {
+        response.setStatus(errorType.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        mapper.writeValue(response.getWriter(), ApiResponse.createError(errorType));
     }
 
 }

@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<?>> handleException(CustomException customException) {
-        ApiResponse<?> response = ApiResponse.createError(customException);
+        ApiResponse<?> response = ApiResponse.createError(customException.getErrorType());
         return ResponseEntity
                 .status(customException.getErrorType().getHttpStatus())
                 .body(response);
