@@ -1,7 +1,7 @@
 package com.example.outsourcingproject.domain.task.service;
 
-import com.example.outsourcingproject.domain.task.dto.CommentResponseData;
-import com.example.outsourcingproject.domain.task.dto.CommentResponseDto;
+import com.example.outsourcingproject.domain.task.dto.response.CommentData;
+import com.example.outsourcingproject.domain.task.dto.response.CommentUserData;
 import com.example.outsourcingproject.domain.task.entity.Comment;
 import com.example.outsourcingproject.domain.task.entity.Task;
 import com.example.outsourcingproject.domain.task.repository.CommentRepository;
@@ -11,12 +11,10 @@ import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.example.outsourcingproject.global.common.ApiResponse.createSuccess;
 
 @Getter
 @Service
@@ -37,22 +33,10 @@ public class CommentService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    @PostConstruct
-    public void init() {
-        System.out.println("🔥 CommentService created by Spring: " + this);
-        System.out.println("🔥 부팅 시점의 CommentService class: " + this.getClass());
-        System.out.println(" taskRepository: " + taskRepository);
-        System.out.println("commentRepository: " + commentRepository);
-        System.out.println("taskRepository 의 주소 : " + taskRepository.getClass());
-        System.out.println("commentRepository 의 주소 : " + commentRepository.getClass());
-    }
+
 
     // 댓글 생성 로직
-    public ApiResponse<CommentResponseData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
-
-        System.out.println(" 댓글 생성 api 의 taskRepository: " + taskRepository);
-        System.out.println("댓글 생성 api 의 commentRepository : " + commentRepository);
-        System.out.println("댓글 생성 api 의 userRepository : " + userRepository);
+    public ApiResponse<CommentData> addComment(Long taskId, String contents, HttpServletRequest servletRequest) {
 
         Comment comment = new Comment(contents);
 
@@ -72,7 +56,22 @@ public class CommentService {
 
 
         // data 객체 생성
-        CommentResponseData data = new CommentResponseData(taskId, comment.getUser().getName(), comment.getContents());
+        CommentUserData userData = new CommentUserData(
+                comment.getUser().getId(),
+                comment.getUser().getUsername(),
+                comment.getUser().getName(),
+                comment.getUser().getEmail()
+        );
+
+        CommentData data = new CommentData(
+                comment.getId(),
+                comment.getContent(),
+                comment.getTask().getId(),
+                comment.getTask().getGenerator().getId(),
+                userData,
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
 
         return ApiResponse.createSuccess("댓글 생성 성공!", data);
 
@@ -81,23 +80,38 @@ public class CommentService {
 
     // 댓글 수정 로직
     @Transactional
-    public ApiResponse<CommentResponseData> updateComment(Long taskId, Long commentId, String contents) {
+    public ApiResponse<CommentData> updateComment(Long taskId, Long commentId, String contents, HttpServletRequest servletRequest) {
 
         System.out.println(" 댓글 수정 api 의 taskRepository: " + taskRepository);
         System.out.println("댓글 수정 api 의 commentRepository : " + commentRepository);
 
         // 수정할 댓글 가져오기
-        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).
                 orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 댓글 수정
-        comment.setContents(contents);
+        comment.setContent(contents);
 
         // 수정된 댓글 저장
         commentRepository.save(comment);
 
         // data 객체 생성
-        CommentResponseData data = new CommentResponseData(taskId, comment.getUser().getName(), comment.getContents());
+        CommentUserData userData = new CommentUserData(
+                comment.getUser().getId(),
+                comment.getUser().getUsername(),
+                comment.getUser().getName(),
+                comment.getUser().getEmail()
+        );
+
+        CommentData data = new CommentData(
+                comment.getId(),
+                comment.getContent(),
+                comment.getTask().getId(),
+                comment.getTask().getGenerator().getId(),
+                userData,
+                comment.getCreatedAt(),
+                comment.getModifiedAt()
+        );
 
         return ApiResponse.createSuccess("수정 성공!", data);
 
@@ -106,25 +120,41 @@ public class CommentService {
 
 
     // 댓글 조회 로직
-    public ApiResponse<List<CommentResponseData>> getCommentList(Long taskId, Pageable pageable, String keyword) {
+    public ApiResponse<Page<CommentData>> getCommentList(Long taskId, Pageable pageable, String keyword, HttpServletRequest servletRequest) {
 
         // 댓글 리스트 조회
         Page<Comment> comments;
 
         if(!(keyword == null) && !keyword.isBlank()) {
-            comments = commentRepository.findByTaskIdAndContentsContaining(taskId, keyword, pageable);
+            comments = commentRepository.findByTaskIdAndContentContainingAndIsDeletedFalse(taskId, keyword, pageable);
         } else {
-            comments = commentRepository.findByTaskId(taskId, pageable);
+            comments = commentRepository.findByTaskIdAndIsDeletedFalse(taskId, pageable);
+        }
+
+        if(comments == null) {
+            throw new CustomException(ErrorType.COMMENT_NOT_FOUND);
         }
 
         // data 만들기
-        List<CommentResponseData> data = comments.getContent().stream()
+        List<CommentData> commentDataList = comments.getContent().stream()
                 .map((comment) ->
-                        new CommentResponseData(
+                        new CommentData(
+                                comment.getId(),
+                                comment.getContent(),
                                 comment.getTask().getId(),
-                                comment.getUser().getName(),
-                                comment.getContents()))
+                                comment.getTask().getGenerator().getId(),
+                                new CommentUserData(
+                                        comment.getUser().getId(),
+                                        comment.getUser().getUsername(),
+                                        comment.getUser().getName(),
+                                        comment.getUser().getEmail()
+                                ),
+                                comment.getCreatedAt(),
+                                comment.getModifiedAt()
+                        ))
                 .collect(Collectors.toList());
+
+        Page<CommentData> data = new PageImpl<>(commentDataList, pageable, commentDataList.size());
 
         // 응답객체 반환
         return ApiResponse.createSuccess("조회 성공!", data);
@@ -134,10 +164,10 @@ public class CommentService {
 
     // 댓글 삭제 로직 - 소프트 삭제
     @Transactional
-    public ApiResponse<CommentResponseData> softDeleteComment(Long taskId, Long commentId) {
+    public ApiResponse<CommentData> softDeleteComment(Long taskId, Long commentId) {
 
         // 삭제할 댓글 조회
-        Comment comment = commentRepository.findByIdAndTaskId(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
+        Comment comment = commentRepository.findByIdAndTaskIdAndIsDeletedFalse(taskId, commentId).orElseThrow(() -> new CustomException(ErrorType.COMMENT_NOT_FOUND));
 
         // 소프트 삭제 수행
         comment.setDeleted(true);
@@ -147,7 +177,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         // 성공시 반환할 data 에 null 할당
-        CommentResponseData data = null;
+        CommentData data = null;
 
         return ApiResponse.createSuccess("삭제 성공!", data);
 
