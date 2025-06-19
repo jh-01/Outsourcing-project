@@ -70,7 +70,7 @@ public class CommentService {
                 comment.getTask().getGenerator().getId(),
                 userData,
                 comment.getCreatedAt(),
-                comment.getModifiedAt()
+                comment.getUpdatedAt()
         );
 
         return ApiResponse.createSuccess("댓글 생성 성공!", data);
@@ -110,7 +110,7 @@ public class CommentService {
                 comment.getTask().getGenerator().getId(),
                 userData,
                 comment.getCreatedAt(),
-                comment.getModifiedAt()
+                comment.getUpdatedAt()
         );
 
         return ApiResponse.createSuccess("수정 성공!", data);
@@ -150,7 +150,7 @@ public class CommentService {
                                         comment.getUser().getEmail()
                                 ),
                                 comment.getCreatedAt(),
-                                comment.getModifiedAt()
+                                comment.getUpdatedAt()
                         ))
                 .collect(Collectors.toList());
 
