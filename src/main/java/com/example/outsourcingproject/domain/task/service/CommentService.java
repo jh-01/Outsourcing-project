@@ -137,6 +137,10 @@ public class CommentService {
             comments = commentRepository.findByTaskId(taskId, pageable);
         }
 
+        if(comments == null) {
+            throw new CustomException(ErrorType.COMMENT_NOT_FOUND);
+        }
+
         // data 만들기
         List<CommentData> commentDataList = comments.getContent().stream()
                 .map((comment) ->
