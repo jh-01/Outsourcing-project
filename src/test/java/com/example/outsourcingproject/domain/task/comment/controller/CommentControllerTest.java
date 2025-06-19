@@ -8,6 +8,7 @@ import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,7 +55,7 @@ public class CommentControllerTest {
 
         ApiResponse<CommentResponseData> response = ApiResponse.createSuccess("댓글 생성 성공!", reponseData);
 
-        when(commentService.addComment(1L, request.getContents()))
+        when(commentService.addComment(1L, request.getContents(), null))
                 .thenReturn(response);
 
         // when - Controller 의 로그 찍어놓은것 지워야함.

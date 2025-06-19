@@ -8,9 +8,11 @@ import com.example.outsourcingproject.domain.task.repository.CommentRepository;
 import com.example.outsourcingproject.domain.task.repository.TaskRepository;
 import com.example.outsourcingproject.domain.task.service.CommentService;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.global.common.ApiResponse;
 import com.example.outsourcingproject.global.exception.CustomException;
 import com.example.outsourcingproject.global.exception.ErrorType;
+import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,11 +45,14 @@ public class CommentServiceTest {
     @Mock
     TaskRepository taskRepository;
 
+    @Mock
+    UserRepository userRepository;
+
 
     @Test
     public void addCommentTest() {
 
-        // given - User, Task, repository 행위
+        // given - User, Task, repository 행위, HttpservletRequest
         User user = new User();
         user.setName("이름");
 
@@ -57,7 +63,11 @@ public class CommentServiceTest {
         task.setManager(null);
         task.setGenerator(null);
 
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        servletRequest.setAttribute("id", 1L);
+
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(commentRepository.save(any(Comment.class)))
                 .thenAnswer(invocation ->
                 {Comment comment = invocation.getArgument(0);
@@ -66,7 +76,7 @@ public class CommentServiceTest {
                     return comment; });
 
         // when
-        ApiResponse<?> saved = commentService.addComment(1L, "댓글 내용");
+        ApiResponse<?> saved = commentService.addComment(1L, "댓글 내용", servletRequest);
 
         // then - 댓글 내용 검증으로 확인
         CommentResponseData data = (CommentResponseData) saved.getData();
