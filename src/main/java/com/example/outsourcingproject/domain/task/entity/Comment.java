@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Where(clause = "is_deleted = false")
 @Getter
 @Setter
 @Table
