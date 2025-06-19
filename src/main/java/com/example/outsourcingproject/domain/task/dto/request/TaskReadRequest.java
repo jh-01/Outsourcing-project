@@ -13,12 +13,12 @@ public class TaskReadRequest {
     private String title;
     private String description;
     private Status status;
-    private Long managerId;
+    private Long assigneeId;
 
-    public TaskReadRequest(Long managerId) {
+    public TaskReadRequest(Long assigneeId) {
         this.title = null;
         this.description = null;
         this.status = null;
-        this.managerId = managerId;
+        this.assigneeId = assigneeId;
     }
 }

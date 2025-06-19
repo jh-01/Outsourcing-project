@@ -59,6 +59,15 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+    // security 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Java 시간 타입(JSON 변환 지원)
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 tasks.named('test') {

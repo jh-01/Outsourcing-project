@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -46,25 +47,34 @@ public class UserService {
     }
 
     // 현재 유저 정보 조회
-    public ApiResponse<UserResponseDto> userInfo(String authorizationHeader) {
-        String token = jwtUtil.substringToken(authorizationHeader);
-        String email = jwtUtil.extractClaims(token).get("email", String.class);
-
+    public ApiResponse<UserResponseDto> userInfo(String username) {
         // 사용자가 존재하는지 확인
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorType.INVALID_CREDENTIALS));
 
         return ApiResponse.createSuccess("사용자 정보를 조회했습니다.", new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getRole(), user.getCreatedAt()));
     }
 
+    public ApiResponse<List<UserResponseDto>> getUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserResponseDto> response = users.stream()
+                .map(user -> new UserResponseDto(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getName(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+        return ApiResponse.createSuccess("유저 목록 조회 성공", response);
+    }
+
     // 유저 비밀번호 수정
     @Transactional
-    public ApiResponse<?> updatePassword(@NotBlank String newPassword, @NotBlank String oldPassword, String authorizationHeader) {
-        String token = jwtUtil.substringToken(authorizationHeader);
-        String email = jwtUtil.extractClaims(token).get("email", String.class);
-
+    public ApiResponse<?> updatePassword(@NotBlank String newPassword, @NotBlank String oldPassword, String username) {
         // 사용자가 존재하는지 확인
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorType.INVALID_CREDENTIALS));
 
         // 이전 비밀번호가 맞는지 확인
@@ -87,12 +97,9 @@ public class UserService {
 
     // 유저 탈퇴
     @Transactional
-    public ApiResponse<?> withdraw(String password, String authorizationHeader) {
-        String token = jwtUtil.substringToken(authorizationHeader);
-        String email = jwtUtil.extractClaims(token).get("email", String.class);
-
+    public ApiResponse<?> withdraw(String password, String username) {
         // 사용자가 존재하는지 확인
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorType.INVALID_CREDENTIALS));
 
         // 비밀번호가 일치하는지 확인
@@ -123,7 +130,7 @@ public class UserService {
             throw new CustomException(ErrorType.INVALID_CREDENTIALS);
         }
 
-        String token = jwtUtil.createToken(user.getId(), user.getEmail());
+        String token = jwtUtil.createToken(user.getId(), user.getUsername(), user.getRole());
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
