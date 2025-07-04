@@ -22,7 +22,7 @@
 <br/>
 
 ## 📌 About This Project
-<a href="https://www.canva.com/design/DAF9fRD684w/02d4I61jxBbwkmr8ln2Y1A/view">
+<a href="https://www.canva.com/design/DAGqwPgw5hg/ee9wLK00r4RVBuarHiYOUA/edit?utm_content=DAGqwPgw5hg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">
  <img src="https://github.com/user-attachments/assets/bfe0022c-b5eb-4ce7-ad27-b30c6d4f71f7" />
 </a>
 <img src="https://github.com/user-attachments/assets/6f4514bf-4bb8-40cc-be2b-f6119691f515" />
@@ -32,7 +32,7 @@
 <img src="https://github.com/user-attachments/assets/bab5809d-47ed-4983-8f0d-b4889465ba68" />
 <img src="https://github.com/user-attachments/assets/a6949209-bae5-46ee-b6b7-9bb94c2fd0ff" />
 
-<a href="https://www.canva.com/design/DAF9fRD684w/02d4I61jxBbwkmr8ln2Y1A/view">
+<a href="https://www.canva.com/design/DAGqwPgw5hg/ee9wLK00r4RVBuarHiYOUA/edit?utm_content=DAGqwPgw5hg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">
   발표 자료 보러가기!
 </a>
 <br/>
